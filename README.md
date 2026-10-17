@@ -116,7 +116,7 @@ Al importar un CSV, la calculadora solicita la duración exacta del audio para c
 
 ![Duración total](docs/screenshots/03-modal-duracion.png)
 
-_Modal de duración total con horas, minutos y segundos. (Utiliza Sonic Visualiser arrastrando la linea vertical (Playhead) al final del audio)._
+_Modal de duración total con horas, minutos y segundos. Utiliza Sonic Visualiser arrastrando la linea vertical (Playhead) al final del audio._
 
 ---
 
