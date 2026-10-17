@@ -70,6 +70,16 @@ Busca la opción: "Key Detector: Key...".
 
 _Para una búsqueda mas exacta y universal: "Transform", "Analysis by Maker", "Queen Mary", "University of London" y "Key Detector: Key...". en Sonic Visualiser._
 
+### 📥 Exportar CSV en Sonic Visualiser
+
+Ve a "File", luego selecciona "Export Annotation Layer...".
+
+Este es el archivo que vas a importar en la calculadora, para realizar todo el análisis tonal.
+
+![Importar CSV](docs/screenshots/02.2-exportar-csv.png)
+
+_Sección “Importar CSV en Sonic Visualiser”._
+
 ## 📥 Ejemplo de CSV compatible
 
 El repositorio incluye un archivo de ejemplo real exportado desde Sonic Visualiser:
