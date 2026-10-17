@@ -1,0 +1,2305 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Tonalidad Global v1</title>
+<style>
+  :root{
+    --bg:#0b0d0c; --card:#151817; --border:#2a2f2d; --txt:#e6eae8;
+    --muted:#9aa5a1; --accent:#34d399; --warn:#f59e0b; --danger:#ef4444;
+    --hover:#1d2321;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; background:var(--bg); color:var(--txt);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif; padding:10px;}
+  header{max-width:960px; margin:8px auto 0; text-align:center;}
+  header h1{font-size:17px; letter-spacing:.14em; color:var(--accent);
+            text-transform:uppercase; margin:6px 0 2px;}
+  header p{color:var(--muted); font-size:12px; margin:0 0 6px;}
+  header .by{color:#7d8885; font-size:11px; letter-spacing:.1em; margin:0 0 6px;}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:14px;
+        padding:18px; margin:14px auto; max-width:960px;}
+  .card h2{color:var(--muted); letter-spacing:.12em; font-size:13px;
+           text-transform:uppercase; margin:0 0 8px; font-weight:600;}
+  .desc{font-size:12px; color:var(--muted); margin:0 0 12px; line-height:1.35;}
+  label{font-size:12px; color:var(--muted); display:block; margin-bottom:4px;}
+  input,select,textarea{background:#0f1211; color:var(--txt); border:1px solid var(--border);
+        border-radius:8px; padding:9px 10px; font-size:14px; width:100%;}
+  textarea{min-height:100px; resize:vertical; font-family:inherit;}
+  input:focus,select:focus,textarea:focus{outline:1px solid var(--accent);}
+  .row{display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;}
+  .row > div{flex:1 1 130px;}
+  .btn{background:#1d2321; color:var(--txt); border:1px solid var(--border);
+       border-radius:8px; padding:10px 14px; font-size:13px; cursor:pointer;
+       transition:background .15s, transform .05s, opacity .15s;}
+  .btn:active{transform:scale(.97);}
+  .btn:hover{background:var(--hover);}
+  .btn.primary{background:var(--accent); color:#06281c; border-color:var(--accent); font-weight:600;}
+  .btn.primary:hover{background:#2bc48a;}
+  .btn.danger{color:var(--danger); border-color:#4b2323;}
+  .btn.danger:hover{background:#2a1515;}
+  .btn.on{background:var(--accent); color:#06281c; border-color:var(--accent);}
+  .btn:disabled{opacity:.45; cursor:not-allowed;}
+  .mini{font-size:11px; color:var(--muted); margin-top:5px; line-height:1.35;}
+  .segrow{display:grid; grid-template-columns:1.7fr .8fr .8fr 1.1fr auto auto;
+          gap:8px; align-items:end; margin-bottom:8px;}
+  .segrow .dur{font-size:12px; color:var(--muted); padding-bottom:10px; white-space:nowrap;}
+  @media(max-width:640px){
+    .segrow{grid-template-columns:1fr 1fr;}
+    .segrow select{grid-column:1 / -1;}
+    .segrow .dur{grid-column:1 / -1; padding-bottom:0;}
+  }
+  .donutwrap{display:flex; flex-direction:column; align-items:center; gap:14px;}
+  svg.donut{width:min(300px,78vw); height:auto;}
+  .legend{list-style:none; margin:0; padding:0; width:100%; max-width:480px;}
+  .legend li{display:flex; align-items:center; gap:10px; padding:6px 2px;
+             border-bottom:1px solid #202624; font-size:13px; transition:opacity .15s;
+             cursor:pointer;}
+  .legend .dot{width:11px; height:11px; border-radius:50%; flex:0 0 auto;}
+  .legend .val{margin-left:auto; color:var(--muted); font-size:12px; white-space:nowrap; text-align:right;}
+  .legend li.dimmed{opacity:.22;}
+  .legend li.highlighted{background:#101714; border-radius:6px;}
+  .mapbar{position:relative; height:56px; border-radius:9px; overflow:hidden;
+          border:1px solid var(--border); background:#101413;}
+  .segblock{position:absolute; top:0; height:100%; cursor:pointer;
+            transition:opacity .15s, filter .15s; border-right:1px solid rgba(0,0,0,.28);}
+  .segblock.dimmed{opacity:.22;}
+  .segblock.highlighted{filter:brightness(1.35); outline:1px solid rgba(230,234,232,.35);}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .chip{display:flex; align-items:center; gap:6px; font-size:11px; color:var(--muted);
+        background:#101413; border:1px solid var(--border); border-radius:20px; padding:4px 10px;
+        cursor:pointer; transition:opacity .15s, background .15s, color .15s;}
+  .chip:hover{background:var(--hover);}
+  .chip.dimmed{opacity:.22;}
+  .chip.highlighted{background:var(--accent); color:#06281c; border-color:var(--accent);}
+  .chip .dot{width:9px; height:9px; border-radius:50%; flex:0 0 auto;}
+  .bigkey{font-size:34px; font-weight:700; color:var(--accent); margin:2px 0 4px;}
+  .kv{font-size:13px; color:var(--muted); margin:3px 0; line-height:1.35;}
+  .kv b{color:var(--txt); font-weight:600;}
+  .meter{height:10px; background:#222826; border-radius:6px; overflow:hidden; margin:8px 0 4px;}
+  .meter div{height:100%; background:var(--accent);}
+  .warnbox{background:#241a10; border:1px solid #4b3416; color:var(--warn);
+           border-radius:8px; padding:9px 12px; font-size:12px; margin-top:8px;}
+  .warnbox ul{margin:4px 0 0; padding-left:18px;}
+  .autolegend{background:#0f1211; border:1px dashed var(--border); border-radius:8px;
+              padding:10px 12px; font-family:ui-monospace,monospace; font-size:13px;
+              white-space:pre-wrap; margin-top:10px; color:#cfd8d4;}
+  .histitem{display:flex; gap:8px; align-items:center; border:1px solid var(--border);
+            border-radius:8px; padding:8px 10px; margin-bottom:8px; font-size:13px; flex-wrap:wrap;}
+  .histitem .t{color:var(--muted); font-size:11px; width:100%;}
+  #toast{position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+         background:var(--accent); color:#06281c; padding:9px 18px; border-radius:20px;
+         font-size:13px; font-weight:600; opacity:0; pointer-events:none; transition:opacity .25s;
+         z-index:3000; max-width:90vw; text-align:center;}
+  .hidden{display:none !important;}
+  .import-section{background:#0f1211; border:1px solid var(--border); border-radius:10px; padding:12px;}
+  .dropzone{border:2px dashed var(--border); border-radius:8px; padding:18px; text-align:center;
+            color:var(--muted); font-size:13px; transition:all .15s; cursor:pointer; margin-top:8px;}
+  .dropzone.dragover{border-color:var(--accent); background:#0d1512; color:var(--accent);}
+  .import-options{display:flex; gap:12px; flex-wrap:wrap; margin-top:10px; align-items:flex-end;}
+  .import-options label.check{display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; margin:0;}
+  .import-options input[type="checkbox"]{width:auto; margin:0;}
+  .map-controls{display:flex; gap:8px; margin-bottom:10px; align-items:center; flex-wrap:wrap;}
+  .overlay{position:fixed; inset:0; background:rgba(0,0,0,.66); display:flex;
+           align-items:center; justify-content:center; z-index:2000; padding:16px;}
+  .overlay.hidden{
+  display:none !important;
+}
+  .modal{background:var(--card); border:1px solid var(--border); border-radius:14px;
+         width:min(560px, 100%); padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.45);}
+  .modal h3{margin:0 0 8px; font-size:15px; color:var(--txt);}
+  .modal .desc{margin-bottom:10px;}
+  .time-inputs{display:flex; gap:8px; align-items:flex-end; justify-content:center; margin:14px 0 6px;}
+  .time-inputs > div{flex:1 1 90px;}
+  .time-inputs input{text-align:center; font-size:18px; padding:10px 8px;}
+  .time-inputs .sep{font-size:22px; color:var(--muted); padding-bottom:10px;}
+  .modal-actions{display:flex; gap:8px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap;}
+  .modal-error{color:var(--danger); font-size:12px; margin-top:8px; min-height:16px;}
+  .modal-preview{background:#0f1211; border:1px solid var(--border); border-radius:8px;
+                 padding:10px; font-size:12px; color:var(--muted); margin-top:10px; line-height:1.4;}
+  .modal-preview b{color:var(--txt);}
+  .refuerzo-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:700px){ .refuerzo-grid{grid-template-columns:1fr;} }
+  .refuerzo-box{background:#0f1211; border:1px solid var(--border); border-radius:10px; padding:10px;}
+  .refuerzo-box h3{margin:0 0 6px; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
+  .refuerzo-live{margin-top:10px; background:#0f1211; border:1px solid var(--border);
+                 border-radius:8px; padding:10px; font-size:12px; color:var(--muted); line-height:1.45;}
+  .refuerzo-live b{color:var(--txt);}
+  .audioDurBox{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  #audioDurDisplay{font-size:13px; color:var(--txt); background:#0f1211; border:1px solid var(--border);
+                   border-radius:8px; padding:9px 10px; flex:1 1 220px;}
+  .note{font-size:11px; color:var(--muted); line-height:1.35;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Calculadora de Tonalidad Global</h1>
+  <p>Análisis de familias armónicas · offline · sin dependencias</p>
+  <p class="by">By Seny Clever</p>
+</header>
+
+<!-- TARJETA CSV -->
+<section class="card">
+  <h2>Importar CSV de Sonic Visualiser</h2>
+  <p class="desc">
+    Pega aquí el contenido del CSV exportado desde Sonic Visualiser, o importa/arrastra el archivo.
+    La calculadora detecta automáticamente los cambios de tonalidad y luego te pedirá la duración total del audio.
+    En Sonic Visualiser: <b>File → Export Annotation Layer…</b>
+  </p>
+  <div class="import-section">
+    <label for="csvText">Contenido del CSV</label>
+    <textarea id="csvText" placeholder="0.000000000,19,F# minor&#10;19.319002268,24,B minor&#10;27.492426304,3,D major"></textarea>
+    <div class="dropzone" id="dropzone">
+      📁 Arrastra un archivo .csv aquí, o haz clic para seleccionarlo
+      <input type="file" id="csvFile" accept=".csv,text/csv" class="hidden">
+    </div>
+
+    <div class="import-options">
+      <label class="check"><input type="checkbox" id="csvReplace" checked> Reemplazar sesión actual</label>
+      <label class="check"><input type="checkbox" id="csvMerge" checked> Fusionar segmentos consecutivos iguales</label>
+      <div style="flex:1 1 180px;">
+        <label for="csvMinDur">Duración mínima (segundos)</label>
+        <input id="csvMinDur" type="number" step="0.001" min="0" value="0">
+        <div class="note">0 = conservar todo.</div>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <button class="btn primary" id="importCsv">Importar CSV</button>
+      <button class="btn" id="clearCsv">Limpiar CSV</button>
+    </div>
+    <div id="csvInfo" class="mini"></div>
+  </div>
+</section>
+
+<!-- TARJETA ENTRADA -->
+<section class="card">
+  <h2>Entrada de datos</h2>
+
+  <div class="row">
+    <div style="flex:2 1 220px;">
+      <label for="name">Nombre de la sesión</label>
+      <input id="name" placeholder="">
+      <div class="note">Se usará para exportar JSON e informe.</div>
+    </div>
+    <div>
+      <label for="unit">Unidad</label>
+      <select id="unit">
+        <option value="seg">Segundos</option>
+        <option value="comp">Compases</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div style="flex:2 1 320px;">
+      <label>Duración total del audio</label>
+      <div class="audioDurBox">
+        <div id="audioDurDisplay">Sin definir</div>
+        <button class="btn" id="editAudioDur">Editar</button>
+      </div>
+      <div class="note">
+        Duración exacta del audio. Se usa para calcular el final del último segmento,
+        la ventana de cierre y el refuerzo.
+      </div>
+    </div>
+  </div>
+
+  <div class="row" id="bpmrow">
+    <div><label for="bpm">BPM (opcional, desbloquea mm:ss)</label>
+      <input id="bpm" type="number" step="any" placeholder="Ej: 120">
+      <div class="note">En la mayoría de DAWs el BPM cuenta negras.</div>
+    </div>
+    <div><label for="tsig">Compás</label>
+      <select id="tsig"><option>4/4</option><option>3/4</option><option>6/8</option><option>12/8</option></select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>Carácter del beat</label>
+      <div style="display:flex;gap:8px;">
+        <button class="btn on" id="chOsc">Oscuro</button>
+        <button class="btn" id="chBri">Brillante</button>
+      </div>
+      <div class="note">Si la familia ganadora tiene versión mayor y menor, este criterio decide cuál mostrar.</div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div style="flex:1 1 100%;">
+      <label>Refuerzo de inicio y cierre</label>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap; margin-bottom:8px;">
+        <button class="btn" id="expBtn">OFF</button>
+        <span class="note">Da importancia adicional a las secciones de apertura y cierre.</span>
+      </div>
+
+      <div class="refuerzo-grid">
+        <div class="refuerzo-box">
+          <h3>📏 Ventana</h3>
+          <div class="note" style="margin-bottom:8px;">
+            Cuánto tiempo se considera apertura y cierre del tema.
+          </div>
+          <div class="row">
+            <div>
+              <label for="expMode">Modo</label>
+              <select id="expMode">
+                <option value="seg">Segundos</option>
+                <option value="pct">Porcentaje</option>
+                <option value="comp">Compases</option>
+              </select>
+            </div>
+            <div>
+              <label for="expWin">Tamaño</label>
+              <input id="expWin" type="number" step="any" value="10" min="0">
+            </div>
+          </div>
+        </div>
+
+        <div class="refuerzo-box">
+          <h3>⚖️ Peso extra</h3>
+          <div class="note" style="margin-bottom:8px;">
+            Importancia adicional, expresada como porcentaje de la duración total. 0–100%.
+          </div>
+          <div class="row">
+            <div>
+              <label for="expWi">Inicio (%)</label>
+              <input id="expWi" type="number" step="any" value="10" min="0" max="100">
+            </div>
+            <div>
+              <label for="expWf">Cierre (%)</label>
+              <input id="expWf" type="number" step="any" value="10" min="0" max="100">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="refuerzo-live" id="refuerzoLive" style="display:none;"></div>
+    </div>
+  </div>
+
+  <div id="segRows"></div>
+
+  <div class="row" style="margin-top:2px;">
+    <button class="btn primary" id="addSeg">+ Agregar segmento</button>
+    <button class="btn danger" id="clearSess">Limpiar sesión</button>
+  </div>
+
+  <div id="warnBox"></div>
+</section>
+
+<!-- TARJETA DISTRIBUCIÓN DE ESCALAS -->
+<section class="card">
+  <h2>Distribución de escalas</h2>
+  <p class="desc" id="keyDistDesc">Duración real de cada tonalidad.</p>
+  <div class="donutwrap"><div id="donutKey"></div><ul class="legend" id="legKey"></ul></div>
+</section>
+
+<!-- TARJETA FAMILIAS -->
+<section class="card">
+  <h2>Familias armónicas</h2>
+  <p class="desc" id="famDistDesc">Familias relativas mayor/menor que comparten las mismas 7 notas.</p>
+  <div class="donutwrap"><div id="donutFam"></div><ul class="legend" id="legFam"></ul></div>
+</section>
+
+<!-- TARJETA MAPA -->
+<section class="card">
+  <h2>Mapa de modulaciones</h2>
+  <p class="desc">
+    Representación temporal del tema. Cada bloque es una tonalidad.
+    Pasa el cursor para explorar, haz clic para fijar selección, y usa Agrupar para resaltar apariciones repetidas.
+  </p>
+  <div class="map-controls">
+    <button class="btn" id="groupBtn">Agrupar: OFF</button>
+    <button class="btn" id="groupModeBtn">Tonalidad</button>
+    <button class="btn" id="clearHighlight">Limpiar selección</button>
+  </div>
+  <div class="mapbar" id="mapBar"></div>
+  <div class="chips" id="mapChips"></div>
+</section>
+
+<!-- TARJETA RESULTADO -->
+<section class="card">
+  <h2>Resultado global</h2>
+  <div id="resultBox"></div>
+</section>
+
+<!-- TARJETA NOTAS -->
+<section class="card">
+  <h2>Notas e informe</h2>
+  <label for="notes">Bloc de notas de sesión</label>
+  <textarea id="notes" placeholder="Observaciones, ideas, intérpretes por sección..."></textarea>
+  <label style="margin-top:10px;">Leyenda de tiempos (autogenerada)</label>
+  <div class="autolegend" id="autoLegend">—</div>
+  <div class="row" style="margin-top:12px;">
+    <button class="btn" id="copyLegend">Copiar leyenda</button>
+    <button class="btn" id="copyReport">Copiar informe</button>
+    <button class="btn primary" id="dlReport">Descargar informe .txt</button>
+    <button class="btn" id="dlGuide">Descargar guía (.txt)</button>
+  </div>
+</section>
+
+<!-- TARJETA HISTORIAL -->
+<section class="card">
+  <h2>Historial <span id="histCount" style="color:var(--accent);font-size:11px;"></span></h2>
+  <div class="row">
+    <button class="btn primary" id="saveSess">Guardar sesión</button>
+    <button class="btn" id="expJson">Exportar JSON</button>
+    <button class="btn" id="impJson">Importar JSON</button>
+    <input type="file" id="impFile" accept=".json,application/json" class="hidden">
+  </div>
+  <div id="histList"></div>
+</section>
+
+<!-- MODAL DURACIÓN -->
+<div id="durOverlay" class="overlay hidden">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="durTitle">
+    <h3 id="durTitle">Duración total del audio</h3>
+    <div class="desc" id="durSummary"></div>
+
+    <div class="time-inputs">
+      <div>
+        <label for="durHH">Horas</label>
+        <input id="durHH" inputmode="numeric" autocomplete="off" value="00">
+      </div>
+      <div class="sep">:</div>
+      <div>
+        <label for="durMM">Minutos</label>
+        <input id="durMM" inputmode="numeric" autocomplete="off" value="00">
+      </div>
+      <div class="sep">:</div>
+      <div>
+        <label for="durSS">Segundos</label>
+        <input id="durSS" inputmode="decimal" autocomplete="off" value="00.000">
+      </div>
+    </div>
+
+    <div class="modal-preview" id="durPreview"></div>
+    <div class="modal-error" id="durError"></div>
+
+    <div class="modal-actions">
+      <button class="btn" id="durCancel">Cancelar</button>
+      <button class="btn primary" id="durApply" disabled>Aplicar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+/* ================= UTILIDADES BÁSICAS ================= */
+const $ = s => document.querySelector(s);
+const pad2 = n => String(n).padStart(2,"0");
+const pad3 = n => String(n).padStart(3,"0");
+let uidCounter = 0;
+function uid(){
+  return "s" + Date.now().toString(36) + "_" + (uidCounter++) + "_" + Math.random().toString(36).slice(2,8);
+}
+function esc(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#39;");
+}
+function parseDecimal(x){
+  if(typeof x === "number") return x;
+  if(x == null) return NaN;
+  const s = String(x).trim().replace(",", ".");
+  if(!s) return NaN;
+  return parseFloat(s);
+}
+function clampPct(x){
+  const v = parseDecimal(x);
+  if(isNaN(v)) return 0;
+  return Math.min(100, Math.max(0, v));
+}
+function fmtDot(n, d=3){
+  const v = parseDecimal(n);
+  return isNaN(v) ? "" : v.toFixed(d);
+}
+function fmtTime(sec){
+  const v = parseDecimal(sec);
+  if(isNaN(v)) return null;
+  const totalSec = Math.max(0, Math.round(v * 1000) / 1000);
+  const h = Math.floor(totalSec / 3600);
+  const m = Math.floor((totalSec % 3600) / 60);
+  const s = Math.floor(totalSec % 60);
+  if(h > 0) return h + ":" + pad2(m) + ":" + pad2(s);
+  return m + ":" + pad2(s);
+}
+function fmtHHMMSSms(sec){
+  const v = parseDecimal(sec);
+  if(isNaN(v)) return "--:--:--.---";
+  const ms = Math.max(0, Math.round(v * 1000));
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  const millis = ms % 1000;
+  return pad2(h) + ":" + pad2(m) + ":" + pad2(s) + "." + pad3(millis);
+}
+function sanitizeFilename(name){
+  const base = String(name || "").trim();
+  if(!base) return "sesion_sin_nombre";
+  return base
+    .replace(/[<>:"/\\|?*]/g, "_")
+    .replace(/\s+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "") || "sesion_sin_nombre";
+}
+function toast(m){
+  const t = $("#toast");
+  t.textContent = m;
+  t.style.opacity = "1";
+  clearTimeout(t._timer);
+  t._timer = setTimeout(()=> t.style.opacity = "0", 2200);
+}
+function copyText(txt){
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(()=> toast("Copiado al portapapeles"));
+  } else {
+    const ta = document.createElement("textarea");
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    ta.remove();
+    toast("Copiado al portapapeles");
+  }
+}
+function download(name, text, mime="text/plain;charset=utf-8"){
+  const b = new Blob([text], {type:mime});
+  const url = URL.createObjectURL(b);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 2000);
+}
+
+/* ================= DATOS TEÓRICOS ================= */
+const DEF_WIN = 10, DEF_WI = 10, DEF_WF = 10;
+
+const FAMS=[
+  ["C/A","C major","A minor"],
+  ["G/E","G major","E minor"],
+  ["D/B","D major","B minor"],
+  ["A/F#m","A major","F# minor"],
+  ["E/C#m","E major","C# minor"],
+  ["B/G#m","B major","G# minor"],
+  ["F#/D#m","F# major","D# minor"],
+  ["Db/Bbm","Db major","Bb minor"],
+  ["Ab/Fm","Ab major","F minor"],
+  ["Eb/Cm","Eb major","C minor"],
+  ["Bb/Gm","Bb major","G minor"],
+  ["F/Dm","F major","D minor"]
+];
+
+const ESROOT={
+  C:"Do","C#":"Do#",D:"Re","D#":"Re#",E:"Mi",F:"Fa","F#":"Fa#",G:"Sol","G#":"Sol#",
+  A:"La","A#":"La#",B:"Si",Db:"Reb",Bb:"Sib",Ab:"Lab",Eb:"Mib"
+};
+
+const KEYS=[];
+FAMS.forEach((f,i)=>{
+  KEYS.push({name:f[1], fam:f[0], mode:"major", idx:i});
+  KEYS.push({name:f[2], fam:f[0], mode:"minor", idx:i});
+});
+const KMAP={};
+KEYS.forEach(k => KMAP[k.name] = k);
+
+const CAMELOT={
+  "C major":"8B","G major":"9B","D major":"10B","A major":"11B","E major":"12B",
+  "B major":"1B","F# major":"2B","Db major":"3B","Ab major":"4B","Eb major":"5B",
+  "Bb major":"6B","F major":"7B",
+  "A minor":"8A","E minor":"9A","B minor":"10A","F# minor":"11A","C# minor":"12A",
+  "G# minor":"1A","D# minor":"2A","Bb minor":"3A","F minor":"4A","C minor":"5A",
+  "G minor":"6A","D minor":"7A"
+};
+const CAMREV={};
+Object.entries(CAMELOT).forEach(([k,v]) => CAMREV[v] = k);
+
+const SHARP=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+const FLAT=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+const INT={major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10]};
+
+// BPM estándar DAW: negras por compás
+const QPB={"4/4":4, "3/4":3, "6/8":3, "12/8":6};
+
+// Mapeo de códigos Sonic Visualiser a nombres válidos de la calculadora
+const MAJOR_CODE_NAMES=[
+  "C major","Db major","D major","Eb major","E major","F major",
+  "F# major","G major","Ab major","A major","Bb major","B major"
+];
+const MINOR_CODE_NAMES=[
+  "C minor","C# minor","D minor","D# minor","E minor","F minor",
+  "F# minor","G minor","G# minor","A minor","Bb minor","B minor"
+];
+const CODE_TO_KEY = {};
+MAJOR_CODE_NAMES.forEach((n,i)=> CODE_TO_KEY[i+1] = n);
+MINOR_CODE_NAMES.forEach((n,i)=> CODE_TO_KEY[i+13] = n);
+
+function esName(n){
+  const p = n.split(" ");
+  const mode = p.pop();
+  const root = p.join(" ");
+  return (ESROOT[root] || root) + (mode === "major" ? " mayor" : " menor");
+}
+function hue(i){ return i * 30; }
+function keyColor(k){
+  const f = KMAP[k];
+  if(!f) return "#444";
+  return `hsl(${hue(f.idx)},62%,${f.mode === "minor" ? 44 : 66}%)`;
+}
+function famColor(id){
+  const i = FAMS.findIndex(f => f[0] === id);
+  return `hsl(${hue(i)},55%,54%)`;
+}
+function scaleNotes(n){
+  const p = n.split(" ");
+  const mode = p.pop();
+  const root = p.join(" ");
+  const order = root.includes("b") ? FLAT : SHARP;
+  const enh = root.replace("Db","C#").replace("Bb","A#").replace("Ab","G#").replace("Eb","D#");
+  const start = SHARP.indexOf(enh);
+  const out = [];
+  INT[mode].forEach(iv => out.push(order[(start + iv) % 12]));
+  return out;
+}
+function compatibles(n){
+  const c = CAMELOT[n];
+  if(!c) return [];
+  const num = parseInt(c);
+  const let_ = c.slice(-1);
+  const prev = num === 1 ? 12 : num - 1;
+  const next = num === 12 ? 1 : num + 1;
+  const o = let_ === "A" ? "B" : "A";
+  return [num + o, prev + let_, next + let_].map(x => CAMREV[x]).filter(Boolean);
+}
+function overlapAmount(aStart, aEnd, bStart, bEnd){
+  const s = Math.max(aStart, bStart);
+  const e = Math.min(aEnd, bEnd);
+  return Math.max(0, e - s);
+}
+
+/* ================= NORMALIZACIÓN DE CLAVES ================= */
+function normalizeKey(str){
+  if(!str) return null;
+  const s = String(str).trim();
+  if(KMAP[s]) return s;
+
+  const rootMatch = s.match(/^([A-G][#b]?)/i);
+  if(!rootMatch) return null;
+
+  let root = rootMatch[1];
+  root = root.charAt(0).toUpperCase() + root.slice(1);
+  const rest = s.slice(rootMatch[0].length).trim().toLowerCase();
+
+  let mode = null;
+  if(/major|maj|mayor/.test(rest)) mode = "major";
+  else if(/minor|min|menor/.test(rest)) mode = "minor";
+  else if(rest === "m") mode = "minor";
+  else if(rest === "M") mode = "major";
+
+  if(!mode) return null;
+
+  const sharpMap = {"Cb":"B","Db":"C#","Eb":"D#","Fb":"E","Gb":"F#","Ab":"G#","Bb":"A#"};
+  const flatMajorMap = {"C#":"Db","D#":"Eb","G#":"Ab","A#":"Bb"};
+  const flatMinorMap = {"A#":"Bb"};
+
+  const candidates = [];
+  if(mode === "major"){
+    candidates.push(root + " major");
+    if(flatMajorMap[root]) candidates.push(flatMajorMap[root] + " major");
+    if(sharpMap[root]) candidates.push(sharpMap[root] + " major");
+  } else {
+    candidates.push(root + " minor");
+    if(flatMinorMap[root]) candidates.push(flatMinorMap[root] + " minor");
+    if(sharpMap[root]) candidates.push(sharpMap[root] + " minor");
+  }
+
+  for(const c of candidates){
+    if(KMAP[c]) return c;
+  }
+  return null;
+}
+
+/* ================= ESTADO ================= */
+const LS_CUR = "calcTonal.v4.current";
+const LS_HIST = "calcTonal.v4.history";
+const LS_CUR_V3 = "calcTonal.v3.current";
+const LS_HIST_V3 = "calcTonal.v3.history";
+
+function blankState(){
+  return {
+    name:"", unit:"seg", bpm:"", tsig:"4/4", char:"oscuro",
+    exp:false, expMode:"seg", expWin:DEF_WIN, wi:DEF_WI, wf:DEF_WF,
+    audioDur:null, notes:"", segs:[]
+  };
+}
+let state = blankState();
+
+function normalizeState(s){
+  const st = Object.assign(blankState(), s || {});
+  st.name = String(s?.name || "");
+  st.unit = s?.unit === "comp" ? "comp" : "seg";
+  st.bpm = s?.bpm ?? "";
+  st.tsig = QPB[s?.tsig] ? s.tsig : "4/4";
+  st.char = s?.char === "brillante" ? "brillante" : "oscuro";
+  st.exp = !!s?.exp;
+  st.expMode = ["seg","pct","comp"].includes(s?.expMode) ? s.expMode : "seg";
+  st.expWin = Math.max(0, parseDecimal(s?.expWin) || DEF_WIN);
+  st.wi = clampPct(s?.wi ?? DEF_WI);
+  st.wf = clampPct(s?.wf ?? DEF_WF);
+  const ad = parseDecimal(s?.audioDur);
+  st.audioDur = isNaN(ad) ? null : Math.max(0, ad);
+  st.notes = String(s?.notes || "");
+  st.segs = Array.isArray(s?.segs) ? s.segs : [];
+  st.segs = st.segs.filter(x => x && KMAP[x.key]).map(x => ({
+    id: x.id || uid(),
+    key: x.key,
+    ini: parseDecimal(x.ini) || 0,
+    fin: parseDecimal(x.fin) || 0,
+    tag: String(x.tag || "")
+  }));
+  return st;
+}
+
+function readState(){
+  state.name = $("#name").value;
+  state.unit = $("#unit").value;
+  state.bpm = $("#bpm").value;
+  state.tsig = $("#tsig").value;
+  state.notes = $("#notes").value;
+  state.expMode = $("#expMode").value;
+  state.expWin = Math.max(0, parseDecimal($("#expWin").value) || 0);
+  state.wi = clampPct($("#expWi").value);
+  state.wf = clampPct($("#expWf").value);
+
+  state.segs = [...$("#segRows").children].map(r => ({
+    id: r.dataset.id || uid(),
+    key: r.querySelector(".k").value,
+    ini: parseDecimal(r.querySelector(".i").value) || 0,
+    fin: parseDecimal(r.querySelector(".f").value) || 0,
+    tag: r.querySelector(".t").value
+  }));
+  return state;
+}
+
+function segRow(s){
+  const d = document.createElement("div");
+  d.className = "segrow";
+  d.dataset.id = s.id;
+
+  const opts = FAMS.map(f =>
+    `<optgroup label="${f[0]}">` +
+    `<option value="${f[1]}">${f[1]} / ${esName(f[1])}</option>` +
+    `<option value="${f[2]}">${f[2]} / ${esName(f[2])}</option>` +
+    `</optgroup>`
+  ).join("");
+
+  d.innerHTML = `
+    <div><label>Tonalidad</label><select class="k">${opts}</select></div>
+    <div><label class="li">Inicio</label><input class="i" type="number" step="any" value="${fmtDot(s.ini)}"></div>
+    <div><label class="lf">Fin</label><input class="f" type="number" step="any" value="${fmtDot(s.fin)}"></div>
+    <div><label>Etiqueta (opcional)</label><input class="t" value="${esc(s.tag || "")}"></div>
+    <span class="dur"></span>
+    <button class="btn danger" title="Eliminar">✕</button>
+  `;
+  d.querySelector(".k").value = s.key;
+  return d;
+}
+
+function renderRows(){
+  const box = $("#segRows");
+  box.innerHTML = "";
+  state.segs.forEach(s => box.appendChild(segRow(s)));
+  unitLabels();
+}
+
+function unitLabels(){
+  const c = state.unit === "comp";
+  document.querySelectorAll(".li").forEach(e => e.textContent = c ? "Inicio (comp)" : "Inicio (seg)");
+  document.querySelectorAll(".lf").forEach(e => e.textContent = c ? "Fin (comp)" : "Fin (seg)");
+  $("#bpmrow").style.display = c ? "flex" : "none";
+}
+
+/* ================= MOTOR ================= */
+function compute(st){
+  const res = {warn: [], secsAvail:false, secPerUnit:1};
+
+  const bpm = parseDecimal(st.bpm);
+  const hasBpm = bpm > 0;
+  if(st.unit === "seg"){
+    res.secsAvail = true;
+    res.secPerUnit = 1;
+  } else if(hasBpm){
+    res.secsAvail = true;
+    res.secPerUnit = QPB[st.tsig] * 60 / bpm;
+  } else {
+    res.secPerUnit = 1;
+    res.warn.push("Unidad en compases sin BPM: la leyenda mm:ss no está disponible.");
+  }
+
+  const sorted = st.segs.map(s => ({...s, dur: Math.max(0, (s.fin - s.ini) || 0)}))
+                        .sort((a,b) => (a.ini || 0) - (b.ini || 0));
+  res.sorted = sorted;
+
+  st.segs.forEach((s,i)=>{
+    if(!(s.fin >= s.ini)) res.warn.push(`Segmento ${i+1}: el fin no supera al inicio.`);
+  });
+
+  for(let i=1;i<sorted.length;i++){
+    if(sorted[i].ini > sorted[i-1].fin + 0.001){
+      res.warn.push(`Hueco entre segmentos ${sorted[i-1].i != null ? sorted[i-1].i+1 : i} y ${sorted[i].i != null ? sorted[i].i+1 : i+1}.`);
+    }
+    if(sorted[i].ini < sorted[i-1].fin - 0.001){
+      res.warn.push(`Solape entre segmentos ${sorted[i-1].i != null ? sorted[i-1].i+1 : i} y ${sorted[i].i != null ? sorted[i].i+1 : i+1}.`);
+    }
+  }
+
+  if(sorted.length && sorted[0].ini > 0.001){
+    res.warn.push("El primer segmento no inicia en 0: los capítulos de YouTube exigen arrancar en 0:00.");
+  }
+
+  const T = sorted.reduce((a,s)=> a + s.dur, 0);
+  res.total = T;
+
+  const maxFin = sorted.length ? Math.max(...sorted.map(s => s.fin)) : 0;
+  res.maxFin = maxFin;
+
+  // Duración total de la línea temporal en la unidad actual
+  let D = null;
+  if(st.audioDur != null){
+    if(st.unit === "seg"){
+      D = st.audioDur;
+    } else if(res.secsAvail){
+      D = st.audioDur / res.secPerUnit;
+    } else {
+      res.warn.push("La duración total del audio está en segundos, pero la sesión está en compases sin BPM.");
+    }
+  }
+  if(D == null) D = maxFin;
+  if(D < maxFin - 0.001){
+    res.warn.push("La duración total del audio es menor que el final de algunos segmentos.");
+  }
+  res.D = D;
+  res.timeline = Math.max(D || 0, maxFin || 0, T || 0);
+
+  // Raw
+  const keyRaw = {}, famRaw = {};
+  sorted.forEach(s=>{
+    const k = KMAP[s.key];
+    if(!k) return;
+    keyRaw[s.key] = (keyRaw[s.key] || 0) + s.dur;
+    famRaw[k.fam] = (famRaw[k.fam] || 0) + s.dur;
+  });
+
+  const keyBonus = {};
+  let bonusI = 0, bonusF = 0;
+  let refInfo = null;
+
+  if(st.exp && sorted.length && D > 0){
+    let W = 0;
+    if(st.expMode === "seg"){
+      if(st.unit === "seg") W = st.expWin;
+      else if(res.secsAvail) W = st.expWin / res.secPerUnit;
+      else res.warn.push("Ventana en segundos requiere BPM si la unidad está en compases.");
+    } else if(st.expMode === "pct"){
+      W = D * st.expWin / 100;
+    } else if(st.expMode === "comp"){
+      if(st.unit === "comp") W = st.expWin;
+      else if(res.secsAvail) W = st.expWin * res.secPerUnit;
+      else res.warn.push("Ventana en compases requiere BPM.");
+    }
+
+    W = Math.max(0, Math.min(W, D));
+
+    const introStart = 0;
+    const introEnd = W;
+    const cierreStart = Math.max(0, D - W);
+    const cierreEnd = D;
+
+    if(W > 0){
+      bonusI = D * st.wi / 100;
+      bonusF = D * st.wf / 100;
+
+      let introOverlap = 0, cierreOverlap = 0;
+      const introByKey = {}, cierreByKey = {};
+
+      sorted.forEach(s=>{
+        const a = Math.min(s.ini, s.fin);
+        const b = Math.max(s.ini, s.fin);
+        const oi = overlapAmount(a,b,introStart,introEnd);
+        const of = overlapAmount(a,b,cierreStart,cierreEnd);
+        if(oi > 0){
+          introOverlap += oi;
+          introByKey[s.key] = (introByKey[s.key] || 0) + oi;
+        }
+        if(of > 0){
+          cierreOverlap += of;
+          cierreByKey[s.key] = (cierreByKey[s.key] || 0) + of;
+        }
+      });
+
+      if(introOverlap <= 0){
+        const k = sorted[0].key;
+        introByKey[k] = 1;
+        introOverlap = 1;
+        res.warn.push("Ningún segmento entra en la ventana de inicio; el peso de inicio se asigna a la primera tonalidad.");
+      }
+      if(cierreOverlap <= 0){
+        const k = sorted[sorted.length-1].key;
+        cierreByKey[k] = 1;
+        cierreOverlap = 1;
+        res.warn.push("Ningún segmento entra en la ventana de cierre; el peso de cierre se asigna a la última tonalidad.");
+      }
+
+      Object.entries(introByKey).forEach(([k,v])=>{
+        keyBonus[k] = (keyBonus[k] || 0) + bonusI * v / introOverlap;
+      });
+      Object.entries(cierreByKey).forEach(([k,v])=>{
+        keyBonus[k] = (keyBonus[k] || 0) + bonusF * v / cierreOverlap;
+      });
+
+      refInfo = {
+        introStart, introEnd, cierreStart, cierreEnd,
+        bonusI, bonusF, W
+      };
+    } else {
+      refInfo = {introStart:0, introEnd:0, cierreStart:D, cierreEnd:D, bonusI:0, bonusF:0, W:0};
+      res.warn.push("La ventana de refuerzo es 0: no se aplica peso extra.");
+    }
+  }
+
+  res.refInfo = refInfo;
+  res.expertOn = !!(st.exp && refInfo && (refInfo.bonusI > 0 || refInfo.bonusF > 0));
+
+  const adjTotal = T + bonusI + bonusF;
+  res.adjTotal = adjTotal;
+
+  const allKeys = new Set([...Object.keys(keyRaw), ...Object.keys(keyBonus)]);
+  res.keyList = [...allKeys].map(k=>{
+    const raw = keyRaw[k] || 0;
+    const bonus = keyBonus[k] || 0;
+    const v = raw + bonus;
+    return {k, raw, bonus, v, p: adjTotal ? v / adjTotal * 100 : 0};
+  }).sort((a,b)=> b.v - a.v);
+
+  const famAgg = {};
+  res.keyList.forEach(it=>{
+    const f = KMAP[it.k]?.fam;
+    if(!f) return;
+    if(!famAgg[f]) famAgg[f] = {k:f, raw:0, bonus:0, v:0};
+    famAgg[f].raw += it.raw;
+    famAgg[f].bonus += it.bonus;
+    famAgg[f].v += it.v;
+  });
+  res.famList = Object.values(famAgg).map(x=>({
+    ...x,
+    p: adjTotal ? x.v / adjTotal * 100 : 0
+  })).sort((a,b)=> b.v - a.v);
+
+  const win = res.famList[0];
+  res.winFam = win ? win.k : null;
+  res.winPct = win ? win.p : 0;
+
+  const fam = FAMS.find(f => f[0] === res.winFam);
+  res.globalKey = fam ? (st.char === "oscuro" ? fam[2] : fam[1]) : null;
+  res.ambiguous = res.winPct < 45;
+
+  return res;
+}
+
+/* ================= RENDER ================= */
+function donut(items, colorFn, centerTop, centerBot){
+  if(!items.length){
+    return `<svg class="donut" viewBox="0 0 200 200">
+      <text x="100" y="105" text-anchor="middle" fill="#9aa5a1" font-size="13">Sin datos</text>
+    </svg>`;
+  }
+  const R = 80, C = 2 * Math.PI * R;
+  let cum = 0, parts = "";
+  items.forEach(it=>{
+    const f = it.p / 100;
+    if(f <= 0) return;
+    const len = f * C;
+    parts += `<circle r="${R}" cx="100" cy="100" fill="none" stroke="${colorFn(it.k)}"
+      stroke-width="30" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-cum}">
+      <title>${it.k}: ${it.p.toFixed(1)}%</title></circle>`;
+    cum += len;
+  });
+  return `<svg class="donut" viewBox="0 0 200 200">
+    <g transform="rotate(-90 100 100)">${parts}</g>
+    <text x="100" y="96" text-anchor="middle" fill="#34d399" font-size="30" font-weight="700">${centerTop}</text>
+    <text x="100" y="118" text-anchor="middle" fill="#9aa5a1" font-size="12">${centerBot}</text>
+  </svg>`;
+}
+
+function legend(el, items, colorFn, unit, isFam){
+  el.innerHTML = items.map(it=>{
+    const dataAttr = isFam ? `data-fam="${esc(it.k)}"` : `data-key="${esc(it.k)}"`;
+    let valText;
+    if(state.exp && it.bonus > 0){
+      valText = `${it.raw.toFixed(1)} + ${it.bonus.toFixed(1)} refuerzo = ${it.v.toFixed(1)} ${unit} · ${it.p.toFixed(1)}%`;
+    } else {
+      valText = `${it.v.toFixed(1)} ${unit} · ${it.p.toFixed(1)}%`;
+    }
+    const title = `${it.k}\nReal: ${it.raw.toFixed(3)} ${unit}\nRefuerzo: ${it.bonus.toFixed(3)} ${unit}\nEfectivo: ${it.v.toFixed(3)} ${unit}\nPorcentaje: ${it.p.toFixed(2)}%`;
+    return `<li ${dataAttr} title="${esc(title)}">
+      <span class="dot" style="background:${colorFn(it.k)}"></span>
+      <span>${esc(it.k)}</span>
+      <span class="val">${valText}</span>
+    </li>`;
+  }).join("") || `<li style="color:#9aa5a1; cursor:default;">Sin datos</li>`;
+}
+
+function render(res){
+  const unit = state.unit === "comp" ? "comp" : "s";
+
+  // Textos de distribución
+  $("#keyDistDesc").textContent = state.exp
+    ? "Valores efectivos con refuerzo aplicado: duración real + peso extra."
+    : "Duración real de cada tonalidad.";
+  $("#famDistDesc").textContent = state.exp
+    ? "Familias relativas mayor/menor con valores efectivos cuando el refuerzo está activo."
+    : "Familias relativas mayor/menor que comparten las mismas 7 notas.";
+
+  $("#donutKey").innerHTML = donut(
+    res.keyList, keyColor,
+    res.keyList[0] ? res.keyList[0].p.toFixed(1) + "%" : "—",
+    res.keyList[0] ? res.keyList[0].k : ""
+  );
+  legend($("#legKey"), res.keyList, keyColor, unit, false);
+
+  $("#donutFam").innerHTML = donut(
+    res.famList, famColor,
+    res.famList[0] ? res.famList[0].p.toFixed(1) + "%" : "—",
+    res.famList[0] ? res.famList[0].k : ""
+  );
+  legend($("#legFam"), res.famList, famColor, unit, true);
+
+  renderMap(res, unit);
+  renderAudioDur();
+  renderRefuerzoLive(res);
+  renderResult(res);
+  renderWarnings(res);
+  renderRowDurations(res, unit);
+  renderAutoLegend(res);
+  applyHighlight();
+}
+
+function renderMap(res, unit){
+  const bar = $("#mapBar");
+  const chips = $("#mapChips");
+  bar.innerHTML = "";
+  chips.innerHTML = "";
+
+  const timeline = res.timeline > 0 ? res.timeline : 1;
+
+  if(!res.sorted.length || res.timeline <= 0){
+    bar.innerHTML = `<div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#5c6663; font-size:12px;">Sin segmentos</div>`;
+    return;
+  }
+
+  res.sorted.forEach(s=>{
+    if(s.dur <= 0) return;
+    const left = Math.max(0, (s.ini / timeline) * 100);
+    const width = Math.max(0.05, (s.dur / timeline) * 100);
+
+    const div = document.createElement("div");
+    div.className = "segblock";
+    div.dataset.id = s.id;
+    div.dataset.key = s.key;
+    div.dataset.fam = KMAP[s.key]?.fam || "";
+    div.style.left = left + "%";
+    div.style.width = width + "%";
+    div.style.background = keyColor(s.key);
+    div.title = `${s.tag && s.tag !== s.key ? s.tag + " · " : ""}${s.key} · ${fmtStart(s.ini,res)} – ${fmtStart(s.fin,res)} · ${s.dur.toFixed(2)} ${unit}`;
+    bar.appendChild(div);
+
+    const chip = document.createElement("span");
+    chip.className = "chip";
+    chip.dataset.id = s.id;
+    chip.dataset.key = s.key;
+    chip.dataset.fam = KMAP[s.key]?.fam || "";
+    chip.innerHTML = `<span class="dot" style="background:${keyColor(s.key)}"></span>${fmtStart(s.ini,res)} ${esc(s.tag && s.tag !== s.key ? s.tag : s.key)}`;
+    chips.appendChild(chip);
+  });
+}
+
+function renderAudioDur(){
+  const el = $("#audioDurDisplay");
+  if(state.audioDur == null){
+    el.textContent = "Sin definir";
+    return;
+  }
+  let txt = fmtHHMMSSms(state.audioDur);
+  if(state.unit === "comp"){
+    const bpm = parseDecimal(state.bpm);
+    if(bpm > 0){
+      const spb = QPB[state.tsig] * 60 / bpm;
+      txt += `  ≈ ${(state.audioDur / spb).toFixed(2)} compases`;
+    } else {
+      txt += "  (agrega BPM para convertir a compases)";
+    }
+  }
+  el.textContent = txt;
+}
+
+function renderRefuerzoLive(res){
+  const box = $("#refuerzoLive");
+  if(!state.exp){
+    box.style.display = "none";
+    box.innerHTML = "";
+    return;
+  }
+  box.style.display = "block";
+
+  if(!res.refInfo){
+    box.innerHTML = "Refuerzo activo, pero no hay duración total ni segmentos suficientes para calcular ventanas.";
+    return;
+  }
+
+  const r = res.refInfo;
+  const fmt = v => fmtStart(v, res);
+  const unit = state.unit === "comp" ? "comp" : "s";
+
+  box.innerHTML = `
+    <b>Ventana de inicio:</b> ${fmt(r.introStart)} → ${fmt(r.introEnd)}
+    · <b>Peso extra:</b> +${r.bonusI.toFixed(2)} ${unit}<br>
+    <b>Ventana de cierre:</b> ${fmt(r.cierreStart)} → ${fmt(r.cierreEnd)}
+    · <b>Peso extra:</b> +${r.bonusF.toFixed(2)} ${unit}<br>
+    <span style="color:var(--muted);">El peso se reparte proporcionalmente entre las escalas presentes en cada ventana.</span>
+  `;
+}
+
+function renderResult(res){
+  let html = "";
+  if(res.globalKey){
+    const ck = CAMELOT[res.globalKey] || "—";
+    html += `<div class="bigkey">${res.globalKey}</div>
+    <div class="kv">${esName(res.globalKey)} · Camelot <b>${ck}</b></div>
+    <div class="kv">Compatibles: <b>${compatibles(res.globalKey).join(", ") || "—"}</b></div>
+    <div class="kv">Notas de la escala: <b>${scaleNotes(res.globalKey).join(" ")}</b></div>
+    <div class="kv">Familia ganadora: <b>${res.winFam}</b> · Confianza: <b>${res.winPct.toFixed(1)}%</b>
+    ${res.expertOn ? ` (refuerzo ${state.wi}% inicio / ${state.wf}% cierre)` : " (duración pura)"}</div>
+    <div class="kv">Duración total: <b>${res.secsAvail ? (fmtTime(res.total * res.secPerUnit) + " min") : res.total.toFixed(1) + " compases"}</b></div>
+    <div class="meter"><div style="width:${Math.min(res.winPct,100)}%; background:${res.ambiguous ? "var(--warn)" : "var(--accent)"}"></div></div>`;
+
+    if(res.ambiguous){
+      html += `<div class="warnbox">Beat armónicamente ambiguo (confianza &lt; 45%). Conviene analizar por secciones.</div>`;
+    }
+  } else {
+    html = `<div class="kv">Calculadora lista. Importa un CSV o agrega tu primer segmento con el botón verde.</div>`;
+  }
+  $("#resultBox").innerHTML = html;
+}
+
+function renderWarnings(res){
+  $("#warnBox").innerHTML = res.warn.length
+    ? `<div class="warnbox">Advertencias (no bloqueantes):<ul>${res.warn.map(w=>`<li>${esc(w)}</li>`).join("")}</ul></div>`
+    : "";
+}
+
+function renderRowDurations(res, unit){
+  [...$("#segRows").children].forEach((r)=>{
+    const id = r.dataset.id;
+    const s = state.segs.find(x => x.id === id);
+    if(!s) return;
+    const d = Math.max(0, (s.fin - s.ini) || 0);
+    let txt = `= ${d.toFixed(2)} ${unit}`;
+    if(res.secsAvail && state.unit === "comp"){
+      txt += ` (${fmtTime(d * res.secPerUnit)})`;
+    }
+    r.querySelector(".dur").textContent = txt;
+  });
+}
+
+function fmtStart(v, res){
+  if(res.secsAvail) return fmtTime(v * res.secPerUnit) || "0:00";
+  return (parseDecimal(v) || 0).toFixed(2) + "c";
+}
+
+function legendLines(res){
+  return res.sorted.map(s=>{
+    const t = fmtStart(s.ini, res);
+    const label = s.tag && s.tag !== s.key ? s.tag : s.key;
+    return `${t} ${label}`;
+  });
+}
+
+function renderAutoLegend(res){
+  const L = legendLines(res);
+  $("#autoLegend").textContent = L.length
+    ? L.join("\n")
+    : "— sin segmentos —\n(Agrega BPM en modo compases para obtener mm:ss)";
+}
+
+function report(res){
+  const unitName = state.unit === "comp" ? "compases" : "segundos";
+  const unitShort = state.unit === "comp" ? "comp" : "s";
+
+  let t = `🎼 INFORME DE ANÁLISIS TONAL\n`;
+  t += `📁 Sesión: ${state.name || "(sin nombre)"}\n`;
+  t += `📅 Fecha: ${new Date().toLocaleString()}\n`;
+  t += `🎚️ Unidad: ${unitName}`;
+  if(state.unit === "comp"){
+    t += ` · 🥁 compás ${state.tsig}` + (state.bpm ? ` · 🔢 BPM ${state.bpm}` : " (sin BPM)");
+  }
+  t += `\n${state.char === "oscuro" ? "🌑" : "☀️"} Carácter: ${state.char}`;
+  t += `\n⏱️ Duración total del audio: ${state.audioDur != null ? fmtHHMMSSms(state.audioDur) : "sin definir"}`;
+  t += `\n🧠 Refuerzo: ${res.expertOn ? `ON (ventana ${state.expWin} ${state.expMode === "pct" ? "%" : state.expMode === "comp" ? "compases" : "segundos"}, peso ${state.wi}% inicio / ${state.wf}% cierre)` : "OFF"}\n\n`;
+
+  if(res.refInfo && state.exp){
+    const r = res.refInfo;
+    t += `📏 VENTANAS DE REFUERZO:\n`;
+    t += `- Inicio: ${fmtStart(r.introStart,res)} → ${fmtStart(r.introEnd,res)} · peso extra +${r.bonusI.toFixed(2)} ${unitShort}\n`;
+    t += `- Cierre: ${fmtStart(r.cierreStart,res)} → ${fmtStart(r.cierreEnd,res)} · peso extra +${r.bonusF.toFixed(2)} ${unitShort}\n`;
+    t += `- Reparto: proporcional entre las escalas presentes en cada ventana\n\n`;
+  }
+
+  t += `🏆 RESULTADO GLOBAL: ${res.globalKey || "N/D"} (${res.globalKey ? esName(res.globalKey) : ""})`;
+  if(res.globalKey) t += ` · 🎯 Camelot ${CAMELOT[res.globalKey]}`;
+  t += `\n🔗 Compatibles: ${res.globalKey ? compatibles(res.globalKey).join(", ") : "—"}`;
+  t += `\n🎹 Notas de la escala: ${res.globalKey ? scaleNotes(res.globalKey).join(" ") : "—"}`;
+  t += `\n📊 Confianza familia ${res.winFam || "N/D"}: ${res.winPct.toFixed(1)}% ${res.ambiguous ? "⚠️ (AMBIGUO)" : "✅"}\n\n`;
+
+  t += `🎵 DISTRIBUCIÓN DE ESCALAS${state.exp ? " (VALORES EFECTIVOS)" : ""}:\n`;
+  t += res.keyList.map(x=>{
+    const extra = state.exp && x.bonus > 0 ? ` | real ${x.raw.toFixed(1)} + refuerzo ${x.bonus.toFixed(1)}` : "";
+    return `- ${x.k}: ${x.v.toFixed(1)} ${unitShort} (${x.p.toFixed(1)}%)${extra}`;
+  }).join("\n") + "\n\n";
+
+  t += `🧬 DISTRIBUCIÓN DE FAMILIAS${state.exp ? " (VALORES EFECTIVOS)" : ""}:\n`;
+  t += res.famList.map(x=>{
+    const extra = state.exp && x.bonus > 0 ? ` | real ${x.raw.toFixed(1)} + refuerzo ${x.bonus.toFixed(1)}` : "";
+    return `- ${x.k}: ${x.v.toFixed(1)} ${unitShort} (${x.p.toFixed(1)}%)${extra}`;
+  }).join("\n") + "\n\n";
+
+  t += `📍 SEGMENTOS:\n`;
+  t += res.sorted.map(s=>{
+    const label = s.tag && s.tag !== s.key ? ` | 🏷️ ${s.tag}` : "";
+    return `${fmtStart(s.ini,res)} – ${fmtStart(s.fin,res)} | ${s.key}${label}`;
+  }).join("\n") + "\n\n";
+
+  t += `📝 NOTAS:\n${state.notes || "(vacío)"}\n\n`;
+  t += `⏱️ LEYENDA DE TIEMPOS:\n${legendLines(res).join("\n") || "—"}`;
+  return t;
+}
+
+/* ================= GUÍA ================= */
+const GUIDE = `📘 GUÍA DE LA CALCULADORA DE TONALIDAD GLOBAL v1
+Creada por Seny Clever · funciona sin internet · un solo archivo
+
+🧭 CONCEPTOS BÁSICOS
+
+🔬 ¿Qué es Sonic Visualiser?
+Es un programa GRATUITO que analiza tu audio por dentro. No solo reproduce la canción: la dibuja y puede decir qué tonalidades aparecen en cada momento del tiempo. Es como un microscopio para música.
+
+🎛️ ¿Qué es un DAW?
+DAW significa estación de trabajo de audio digital. Es el programa donde haces música: grabas, editas, colocas instrumentos virtuales y mezclas. La calculadora te ayuda ANTES de componer: te dice en qué escala trabajar.
+
+🔬 PARTE 1: DESCUBRIR LAS TONALIDADES CON SONIC VISUALISER
+
+1️⃣ Instálalo.
+   - Linux: sudo pacman -S sonic-visualiser
+   - Windows/Mac: descárgalo de sonicvisualiser.org
+
+2️⃣ Abre tu audio:
+   File → Open Audio File...
+
+3️⃣ Lanza el análisis:
+   Transform → Feature Extraction and Analysis
+
+4️⃣ Elige:
+   Queen Mary → Key Detector
+
+5️⃣ En Output:
+   KEY
+
+6️⃣ Sonic Visualiser mostrará bloques de tonalidad sobre el audio. Cada bloque representa una sección con una escala detectada.
+
+7️⃣ Exporta el archivo de anotación:
+   File → Export Annotation Layer...
+   Guarda el archivo .csv, por ejemplo: Probando.csv
+
+📥 PARTE 2: IMPORTAR EL CSV EN LA CALCULADORA
+
+1️⃣ En la tarjeta Importar CSV de Sonic Visualiser:
+   - pega el contenido del CSV,
+   - o pulsa para importar el archivo,
+   - o arrastra el archivo .csv.
+
+2️⃣ Opciones de importación:
+
+   ✅ Reemplazar sesión actual
+      Borra los segmentos actuales y carga el CSV.
+
+   ✅ Fusionar segmentos consecutivos iguales
+      Si aparecen varias líneas seguidas con la misma tonalidad, se convierten en un solo segmento más largo.
+
+   📏 Duración mínima
+      Ignora segmentos demasiado cortos.
+      0 = conservar todo.
+
+3️⃣ Pulsa Importar CSV.
+
+4️⃣ La calculadora abrirá una ventana obligatoria para introducir la duración total del audio.
+
+   Este paso es obligatorio porque el CSV de Sonic Visualiser indica los INICIOS de cada tonalidad, pero no indica el final del último segmento.
+
+   Ejemplo:
+   0.000,19,F# minor
+   19.319,24,B minor
+   ...
+   213.252,3,D major
+
+   El último segmento empieza en 213.252 segundos. Para saber cuánto dura, la calculadora necesita la duración total.
+
+5️⃣ Introduce la duración exacta en formato:
+   HH : MM : SS.mmm
+
+   Ejemplo:
+   00:03:40.000
+
+6️⃣ La calculadora calculará automáticamente:
+   - la duración de cada segmento,
+   - el final del último segmento,
+   - la distribución de escalas,
+   - las familias armónicas,
+   - el mapa de modulaciones,
+   - el resultado global.
+
+🧮 PARTE 3: ENTRADA DE DATOS
+
+📁 Nombre de la sesión
+Ponle nombre a tu análisis. Se usará al exportar JSON o informe TXT.
+
+🎚️ Unidad
+Puedes trabajar en segundos o compases.
+
+🔢 BPM
+El BPM permite mostrar tiempos en minutos:segundos cuando trabajas en compases. En la mayoría de DAWs, el BPM cuenta negras.
+
+🥁 Compás
+Disponible cuando trabajas en compases:
+4/4, 3/4, 6/8, 12/8.
+
+🌑 Carácter del beat
+Cuando una familia armónica gana, puede tener versión mayor y menor.
+Ejemplo: D major y B minor comparten familia.
+
+- Oscuro: prioriza la versión menor.
+- Brillante: prioriza la versión mayor.
+
+⏱️ Duración total del audio
+Después de importar, la duración total queda visible y editable. Si necesitas corregirla, pulsa Editar.
+
+🧠 PARTE 4: REFUERZO DE INICIO Y CIERRE
+
+El refuerzo tiene dos conceptos separados.
+
+📏 1. VENTANA
+Define cuánto tiempo se considera apertura y cierre.
+
+Por defecto: 10 segundos.
+
+Ejemplo si el audio dura 4 minutos:
+Inicio: 00:00 → 00:10
+Cierre: 03:50 → 04:00
+
+⚖️ 2. PESO EXTRA
+Define cuánta importancia adicional reciben las escalas presentes en esas ventanas.
+
+Ejemplo:
+Duración total = 240 segundos
+Peso = 10%
+Peso extra = 24 segundos efectivos.
+
+Si una escala estaba presente en la ventana, recibe una parte proporcional de esos 24 segundos según su presencia temporal.
+
+El porcentaje final se calcula sobre:
+Duración total anotada + peso inicio + peso cierre.
+
+🗺️ PARTE 5: MAPA DE MODULACIONES
+
+El mapa muestra tu tema como una barra de tiempo. Cada bloque de color es una tonalidad.
+
+Interacción:
+- Pasa el cursor sobre un bloque para explorarlo.
+- Haz clic para fijar selección.
+- Usa Limpiar selección o la tecla Escape para quitar la selección.
+
+Botón Agrupar:
+Cuando Agrupar está OFF: se resalta solo el segmento seleccionado.
+Cuando Agrupar está ON: se resaltan todas las apariciones de una misma tonalidad o familia.
+
+Sub-botón de agrupación:
+- Tonalidad: agrupa por escala concreta, por ejemplo E minor.
+- Familia: agrupa por familia armónica, por ejemplo D/B.
+
+🏆 PARTE 6: RESULTADO GLOBAL
+
+La calculadora muestra:
+- la tonalidad ganadora,
+- su nombre en español,
+- su código Camelot,
+- tonalidades compatibles,
+- las 7 notas de la escala,
+- la familia ganadora,
+- la confianza,
+- la duración total.
+
+Si la confianza es menor que 45%, verás un aviso de beat ambiguo.
+
+📝 PARTE 7: NOTAS E INFORME
+
+Bloc de notas:
+Observaciones libres, secciones, intérpretes, ideas.
+
+Leyenda de tiempos:
+Se genera automáticamente con los inicios de cada segmento. Sirve para capítulos de YouTube.
+
+Botones:
+- Copiar leyenda
+- Copiar informe
+- Descargar informe .txt
+- Descargar guía .txt
+
+El informe y el JSON usan el nombre de la sesión si existe. Si no existe, la calculadora preguntará y ofrecerá sesion_sin_nombre como opción por defecto.
+
+💾 PARTE 8: HISTORIAL
+
+Guardar sesión:
+Guarda el análisis actual en este dispositivo.
+
+Exportar JSON:
+Exporta sesiones guardadas o la sesión actual.
+
+Importar JSON:
+Importa sesiones exportadas anteriormente.
+
+🧪 FLUJO COMPLETO RECOMENDADO
+
+1. Analiza tu audio en Sonic Visualiser con Key Detector.
+2. Exporta la capa de anotación como CSV.
+3. Importa el CSV en la calculadora.
+4. Introduce la duración total del audio.
+5. Revisa distribución de escalas, familias y mapa.
+6. Ajusta carácter Oscuro/Brillante.
+7. Si lo necesitas, activa el refuerzo de inicio/cierre.
+8. Copia o descarga el informe.
+9. Usa la tonalidad ganadora y sus notas en tu DAW.
+
+❓ PREGUNTAS FRECUENTES
+
+🤔 ¿Por qué el último segmento necesita duración total?
+Porque el CSV exporta inicios de tonalidad, no el final del último evento. Sin duración total, la calculadora no puede saber cuándo termina el último segmento.
+
+🤔 ¿Qué hace exactamente el refuerzo?
+No cambia la duración real del audio. Suma peso matemático adicional a las secciones de apertura y cierre para que las escalas presentes en esas ventanas tengan más influencia en el resultado global.
+
+🤔 ¿Qué diferencia hay entre ventana y peso?
+Ventana = cuánto tiempo se considera inicio/cierre.
+Peso = cuánta importancia extra se suma.
+
+🤔 ¿Cómo se reparte el peso?
+Se reparte proporcionalmente entre las escalas que están dentro de la ventana. Si una escala ocupa la mitad de la ventana, recibe la mitad del peso extra de esa ventana.
+
+🤔 ¿El peso se aplica a la escala individual?
+Sí. El peso se aplica a escalas individuales y luego se recalculan las familias armónicas.
+
+🤔 ¿Puedo corregir la duración total después?
+Sí. La duración total queda visible en la calculadora y puede editarse.
+
+🤔 ¿El CSV usa códigos numéricos?
+Sí. La calculadora entiende el formato de Sonic Visualiser:
+1-12 = tonalidades mayores
+13-24 = tonalidades menores
+
+🎬 Fin de la guía.`;
+
+/* ================= PERSISTENCIA ================= */
+function saveCur(){
+  localStorage.setItem(LS_CUR, JSON.stringify(readState()));
+}
+function loadCur(){
+  try{
+    let raw = localStorage.getItem(LS_CUR);
+    if(!raw) raw = localStorage.getItem(LS_CUR_V3);
+    if(raw){
+      const s = JSON.parse(raw);
+      if(s && Array.isArray(s.segs)) state = normalizeState(s);
+    }
+  }catch(e){}
+}
+function getHist(){
+  try{
+    let raw = localStorage.getItem(LS_HIST);
+    if(!raw) raw = localStorage.getItem(LS_HIST_V3);
+    const arr = raw ? JSON.parse(raw) : [];
+    return sanitizeSessions(arr);
+  }catch(e){ return []; }
+}
+function setHist(h){
+  localStorage.setItem(LS_HIST, JSON.stringify(h));
+  renderHist();
+}
+function sanitizeSessions(d){
+  let arr = Array.isArray(d) ? d : (d && Array.isArray(d.sessions) ? d.sessions : []);
+  return arr.filter(x => x && x.s && Array.isArray(x.s.segs) && x.s.segs.length > 0).map(x => ({
+    id: Number(x.id) || Date.now() + Math.floor(Math.random()*1e6),
+    savedAt: Number(x.savedAt) || Date.now(),
+    s: normalizeState(x.s)
+  })).filter(x => x.s.segs.length > 0);
+}
+function renderHist(){
+  const h = getHist();
+  $("#histCount").textContent = h.length ? `· ${h.length} sesión(es) en este dispositivo` : "";
+  $("#histList").innerHTML = h.map(x => `
+    <div class="histitem">
+      <span class="t">${new Date(x.savedAt).toLocaleString()}</span>
+      <b style="flex:1">${esc(x.s.name || "(sin nombre)")}</b>
+      <span style="color:var(--accent);font-size:12px">${x.s.char === "oscuro" ? "🌑" : "☀️"}</span>
+      <button class="btn" data-load="${x.id}">Cargar</button>
+      <button class="btn danger" data-del="${x.id}">✕</button>
+    </div>
+  `).join("") || `<div class="kv">Historial vacío.</div>`;
+}
+function writeState(s){
+  state = normalizeState(s);
+  $("#name").value = state.name || "";
+  $("#unit").value = state.unit || "seg";
+  $("#bpm").value = state.bpm || "";
+  $("#tsig").value = state.tsig || "4/4";
+  $("#notes").value = state.notes || "";
+  $("#expMode").value = state.expMode || "seg";
+  $("#expWin").value = state.expWin ?? DEF_WIN;
+  $("#expWi").value = state.wi ?? DEF_WI;
+  $("#expWf").value = state.wf ?? DEF_WF;
+  setChar(state.char || "oscuro");
+  setExpSilent(!!state.exp);
+  renderRows();
+  refresh();
+}
+function setChar(c){
+  state.char = c;
+  $("#chOsc").classList.toggle("on", c === "oscuro");
+  $("#chBri").classList.toggle("on", c === "brillante");
+}
+function setExp(on){
+  state.exp = on;
+  $("#expBtn").textContent = on ? "ON" : "OFF";
+  $("#expBtn").classList.toggle("on", on);
+}
+function setExpSilent(on){
+  state.exp = on;
+  $("#expBtn").textContent = on ? "ON" : "OFF";
+  $("#expBtn").classList.toggle("on", on);
+}
+function refresh(){
+  const res = compute(readState());
+  saveCur();
+  render(res);
+  return res;
+}
+
+/* ================= MODAL DURACIÓN ================= */
+let durModal = {min:0, lastStart:0, onApply:null};
+
+function openDurModal(cfg){
+  durModal.min = Math.max(0, cfg.min || 0);
+  durModal.lastStart = cfg.lastStart ?? durModal.min;
+  durModal.onApply = cfg.onApply;
+
+  $("#durSummary").innerHTML = cfg.summary || "";
+  $("#durError").textContent = "";
+  $("#durOverlay").classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+
+  const initial = cfg.initial != null ? Math.max(cfg.initial, durModal.min) : durModal.min;
+  fillDurInputs(initial);
+  updateDurPreview();
+  setTimeout(()=> $("#durHH").focus(), 30);
+}
+function closeDurModal(){
+  $("#durOverlay").classList.add("hidden");
+  document.body.style.overflow = "";
+  durModal.onApply = null;
+}
+function fillDurInputs(sec){
+  const ms = Math.max(0, Math.round((sec || 0) * 1000));
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  const millis = ms % 1000;
+  $("#durHH").value = pad2(h);
+  $("#durMM").value = pad2(m);
+  $("#durSS").value = pad2(s) + "." + pad3(millis);
+}
+function parseDurInputs(){
+  const hh = parseInt($("#durHH").value || "0", 10);
+  const mm = parseInt($("#durMM").value || "0", 10);
+  const ss = parseDecimal($("#durSS").value || "0");
+  if(isNaN(hh) || isNaN(mm) || isNaN(ss) || hh < 0 || mm < 0 || ss < 0) return null;
+  return hh * 3600 + mm * 60 + ss;
+}
+function updateDurPreview(){
+  const sec = parseDurInputs();
+  const err = $("#durError");
+  const apply = $("#durApply");
+  const preview = $("#durPreview");
+
+  if(sec == null){
+    err.textContent = "Introduce valores numéricos válidos.";
+    apply.disabled = true;
+    preview.innerHTML = "";
+    return;
+  }
+
+  let html = `<b>Duración introducida:</b> ${fmtHHMMSSms(sec)}`;
+
+  if(durModal.lastStart != null){
+    const lastDur = sec - durModal.lastStart;
+    html += `<br><b>Último inicio detectado:</b> ${fmtHHMMSSms(durModal.lastStart)}`;
+    html += `<br><b>Duración del último segmento:</b> ${lastDur.toFixed(3)} segundos`;
+    if(lastDur <= 0){
+      html += `<br><span style="color:var(--warn);">⚠️ El último segmento quedará con duración cero si la duración total coincide con su inicio.</span>`;
+    }
+  }
+
+  preview.innerHTML = html;
+
+  if(sec < durModal.min){
+    err.textContent = `La duración total debe ser al menos ${fmtHHMMSSms(durModal.min)}.`;
+    apply.disabled = true;
+  } else {
+    err.textContent = "";
+    apply.disabled = false;
+  }
+}
+function adjustDurInput(el, delta){
+  let v = parseDecimal(el.value) || 0;
+  v = Math.max(0, v + delta);
+  if(el.id === "durSS") el.value = v.toFixed(3);
+  else el.value = pad2(Math.floor(v));
+  updateDurPreview();
+}
+
+["durHH","durMM","durSS"].forEach(id=>{
+  const el = $("#" + id);
+  el.addEventListener("focus", ()=> el.select());
+  el.addEventListener("input", updateDurPreview);
+  el.addEventListener("keydown", e=>{
+    if(e.key === "Enter"){
+      e.preventDefault();
+      if(!$("#durApply").disabled) $("#durApply").click();
+    }
+    if(e.key === "ArrowUp"){
+      e.preventDefault();
+      adjustDurInput(el, 1);
+    }
+    if(e.key === "ArrowDown"){
+      e.preventDefault();
+      adjustDurInput(el, -1);
+    }
+  });
+});
+
+$("#durCancel").onclick = ()=> closeDurModal();
+$("#durOverlay").addEventListener("click", e=>{
+  if(e.target === $("#durOverlay")) closeDurModal();
+});
+$("#durApply").onclick = ()=>{
+  const sec = parseDurInputs();
+  if(sec == null || sec < durModal.min) return;
+  const cb = durModal.onApply;
+  closeDurModal();
+  if(cb) cb(sec);
+};
+
+/* ================= CSV ================= */
+function splitCsvLine(line){
+  const parts = [];
+  let cur = "", inQ = false;
+  for(let i=0;i<line.length;i++){
+    const ch = line[i];
+    if(inQ){
+      if(ch === '"'){
+        if(line[i+1] === '"'){ cur += '"'; i++; }
+        else inQ = false;
+      } else cur += ch;
+    } else {
+      if(ch === '"') inQ = true;
+      else if(ch === "," || ch === ";" || ch === "\t"){
+        parts.push(cur);
+        cur = "";
+      } else cur += ch;
+    }
+  }
+  parts.push(cur);
+  return parts.map(p => p.trim());
+}
+
+function parseCsv(text){
+  const lines = String(text || "").split(/\r?\n/);
+  const points = [];
+
+  for(const rawLine of lines){
+    const line = rawLine.trim();
+    if(!line || line.startsWith("#")) continue;
+
+    const parts = splitCsvLine(line);
+    if(parts.length < 2) continue;
+
+    const time = parseDecimal(parts[0]);
+    if(isNaN(time)) continue;
+
+    let key = null;
+    const code = parseInt(parts[1], 10);
+    if(!isNaN(code) && CODE_TO_KEY[code]) key = CODE_TO_KEY[code];
+    if(!key) key = normalizeKey(parts[1]);
+    if(!key && parts[2]) key = normalizeKey(parts[2]);
+    if(!key || !KMAP[key]) continue;
+
+    const tag = parts[2] || key;
+    points.push({time, key, tag});
+  }
+
+  points.sort((a,b)=> a.time - b.time);
+  return points;
+}
+
+function mergePoints(points){
+  const out = [];
+  points.forEach(p=>{
+    if(out.length && out[out.length-1].key === p.key){
+      // conserva el primero y descarta cambios intermedios de la misma tonalidad
+      return;
+    }
+    out.push({...p});
+  });
+  return out;
+}
+
+function filterShortPoints(points, durSec, minDur){
+  if(minDur <= 0 || points.length <= 1) return points.slice();
+  let out = points.slice();
+  let changed = true;
+
+  while(changed){
+    changed = false;
+    for(let i=1; i<out.length; i++){
+      const fin = i < out.length - 1 ? out[i+1].time : durSec;
+      const d = fin - out[i].time;
+      if(d < minDur){
+        out.splice(i,1);
+        changed = true;
+        break;
+      }
+    }
+  }
+  return out;
+}
+
+function buildSegmentsFromPoints(points, durSec, minDur){
+  let pts = mergePoints(points);
+  pts = filterShortPoints(pts, durSec, minDur);
+  pts = mergePoints(pts);
+
+  const segs = [];
+  let skippedZero = 0;
+
+  for(let i=0;i<pts.length;i++){
+    const ini = pts[i].time;
+    const fin = i < pts.length - 1 ? pts[i+1].time : durSec;
+    const d = fin - ini;
+    if(d <= 0.000001){
+      skippedZero++;
+      continue;
+    }
+    segs.push({
+      id: uid(),
+      key: pts[i].key,
+      ini,
+      fin,
+      tag: pts[i].tag || pts[i].key
+    });
+  }
+
+  return {segs, skippedZero};
+}
+
+function getExistingMaxFinSec(){
+  if(!state.segs.length) return 0;
+  const maxFin = Math.max(...state.segs.map(s => s.fin || 0));
+  if(state.unit === "seg") return maxFin;
+  const bpm = parseDecimal(state.bpm);
+  if(bpm > 0){
+    const spb = QPB[state.tsig] * 60 / bpm;
+    return maxFin * spb;
+  }
+  return maxFin; // sin conversión fiable
+}
+
+function convertCurrentSessionToSeconds(){
+  if(state.unit !== "comp") return true;
+  const bpm = parseDecimal(state.bpm);
+  if(!(bpm > 0)) return false;
+  const spb = QPB[state.tsig] * 60 / bpm;
+  state.segs.forEach(s=>{
+    s.ini *= spb;
+    s.fin *= spb;
+  });
+  if(state.audioDur == null){
+    state.audioDur = state.segs.length ? Math.max(...state.segs.map(s=>s.fin)) : null;
+  }
+  state.unit = "seg";
+  return true;
+}
+
+function applyAudioDurToLastSegment(sec){
+  if(!state.segs.length) return;
+  const bpm = parseDecimal(state.bpm);
+  if(state.unit === "comp" && !(bpm > 0)){
+    return;
+  }
+  const factor = state.unit === "seg" ? 1 : QPB[state.tsig] * 60 / bpm;
+  const val = state.unit === "seg" ? sec : sec / factor;
+
+  let last = state.segs[0];
+  state.segs.forEach(s=>{ if(s.ini > last.ini) last = s; });
+  last.fin = val;
+}
+
+function applyCsvImport(points, opts){
+  const built = buildSegmentsFromPoints(points, opts.durSec, opts.minDur);
+  if(!built.segs.length){
+    toast("El CSV no produjo segmentos válidos.");
+    return;
+  }
+
+  if(opts.replace){
+    state.segs = built.segs;
+    state.unit = "seg";
+    state.audioDur = opts.durSec;
+  } else {
+    if(state.unit === "comp"){
+      const ok = convertCurrentSessionToSeconds();
+      if(!ok){
+        toast("Para añadir CSV a una sesión en compases, agrega BPM o limpia la sesión.");
+        return;
+      }
+    }
+    state.segs = [...state.segs, ...built.segs];
+    state.audioDur = opts.durSec;
+  }
+
+  applyAudioDurToLastSegment(opts.durSec);
+  clearHighlightState();
+  renderRows();
+  refresh();
+
+  let msg = `${built.segs.length} segmentos importados`;
+  if(built.skippedZero > 0) msg += ` · ${built.skippedZero} eventos de duración cero omitidos`;
+  toast(msg);
+  $("#csvInfo").innerHTML = `✅ ${msg}.`;
+}
+
+$("#importCsv").onclick = ()=>{
+  const text = $("#csvText").value.trim();
+  if(!text){
+    toast("Pega el contenido del CSV o importa un archivo.");
+    return;
+  }
+
+  const points = parseCsv(text);
+  if(!points.length){
+    toast("No se encontraron segmentos válidos en el CSV.");
+    return;
+  }
+
+  const replace = $("#csvReplace").checked;
+  const merge = $("#csvMerge").checked;
+  const minDur = Math.max(0, parseDecimal($("#csvMinDur").value) || 0);
+
+  let pts = merge ? mergePoints(points) : points.slice();
+  const firstStart = pts[0]?.time || 0;
+  const lastStart = pts[pts.length-1]?.time || 0;
+
+  if(!replace && state.unit === "comp"){
+    const bpm = parseDecimal(state.bpm);
+    if(!(bpm > 0)){
+      toast("Para añadir CSV a una sesión en compases, agrega BPM o limpia la sesión.");
+      return;
+    }
+  }
+
+  const existingMaxSec = replace ? 0 : getExistingMaxFinSec();
+  const minRequired = Math.max(lastStart, existingMaxSec);
+
+  let initial = state.audioDur;
+  if(initial == null || initial < minRequired) initial = minRequired;
+
+  const summary = `
+    <b>Segmentos detectados:</b> ${pts.length}<br>
+    <b>Primer inicio:</b> ${fmtHHMMSSms(firstStart)}<br>
+    <b>Último inicio:</b> ${fmtHHMMSSms(lastStart)}<br>
+    ${replace ? "" : `<b>Sesión actual termina aprox. en:</b> ${fmtHHMMSSms(existingMaxSec)}<br>`}
+    <b>Mínimo permitido:</b> ${fmtHHMMSSms(minRequired)}
+  `;
+
+  openDurModal({
+    min: minRequired,
+    lastStart,
+    initial,
+    summary,
+    onApply: (durSec)=>{
+      applyCsvImport(pts, {replace, merge, minDur, durSec});
+    }
+  });
+};
+
+$("#clearCsv").onclick = ()=>{
+  $("#csvText").value = "";
+  $("#csvInfo").innerHTML = "";
+};
+
+$("#csvFile").onchange = e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=> { $("#csvText").value = r.result; toast("Archivo CSV cargado en el cuadro de texto."); };
+  r.readAsText(f);
+  e.target.value = "";
+};
+
+const dropzone = $("#dropzone");
+dropzone.onclick = ()=> $("#csvFile").click();
+dropzone.addEventListener("dragover", e=>{
+  e.preventDefault();
+  dropzone.classList.add("dragover");
+});
+dropzone.addEventListener("dragleave", ()=> dropzone.classList.remove("dragover"));
+dropzone.addEventListener("drop", e=>{
+  e.preventDefault();
+  dropzone.classList.remove("dragover");
+  const f = e.dataTransfer.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=> { $("#csvText").value = r.result; toast("Archivo CSV cargado en el cuadro de texto."); };
+  r.readAsText(f);
+});
+
+/* ================= AUDIO DUR EDIT ================= */
+$("#editAudioDur").onclick = ()=>{
+  const maxFinSec = getExistingMaxFinSec();
+  const min = Math.max(0, maxFinSec || 0);
+  const initial = state.audioDur != null ? Math.max(state.audioDur, min) : min;
+
+  openDurModal({
+    min,
+    lastStart: maxFinSec,
+    initial,
+    summary: `
+      <b>Editar duración total del audio.</b><br>
+      Si hay segmentos, el último segmento se actualizará hasta esta duración.
+    `,
+    onApply: (sec)=>{
+      state.audioDur = sec;
+      applyAudioDurToLastSegment(sec);
+      renderRows();
+      refresh();
+      toast("Duración total actualizada.");
+    }
+  });
+};
+
+/* ================= RESALTADO MAPA ================= */
+const hl = {
+  group: false,
+  groupMode: "key", // key | fam
+  selected: null,
+  hover: null
+};
+
+function sameFocus(a,b){
+  if(!a || !b) return false;
+  return a.kind === b.kind && a.id === b.id && a.key === b.key && a.fam === b.fam;
+}
+function clearHighlightState(){
+  hl.selected = null;
+  hl.hover = null;
+  applyHighlight();
+}
+function validateFocus(f){
+  if(!f) return null;
+  if(f.kind === "seg"){
+    const el = document.querySelector(`#mapBar .segblock[data-id="${CSS.escape(f.id)}"]`);
+    if(!el) return null;
+  }
+  if(f.kind === "key" && !KMAP[f.key]) return null;
+  if(f.kind === "fam" && !FAMS.some(x => x[0] === f.fam)) return null;
+  return f;
+}
+function applyHighlight(){
+  const blocks = [...document.querySelectorAll("#mapBar .segblock")];
+  const chips = [...document.querySelectorAll("#mapChips .chip")];
+  const legKeys = [...document.querySelectorAll("#legKey li[data-key]")];
+  const legFams = [...document.querySelectorAll("#legFam li[data-fam]")];
+
+  [...blocks, ...chips, ...legKeys, ...legFams].forEach(el=>{
+    el.classList.remove("dimmed", "highlighted");
+  });
+
+  hl.selected = validateFocus(hl.selected);
+  hl.hover = validateFocus(hl.hover);
+
+  const focus = hl.selected || hl.hover;
+  if(!focus) return;
+
+  if(focus.kind === "seg"){
+    blocks.forEach(el=>{
+      if(el.dataset.id === focus.id) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    chips.forEach(el=>{
+      if(el.dataset.id === focus.id) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    legKeys.forEach(el=>{
+      if(el.dataset.key === focus.key) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    legFams.forEach(el=>{
+      if(el.dataset.fam === focus.fam) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+  }
+
+  if(focus.kind === "key"){
+    blocks.forEach(el=>{
+      if(el.dataset.key === focus.key) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    chips.forEach(el=>{
+      if(el.dataset.key === focus.key) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    legKeys.forEach(el=>{
+      if(el.dataset.key === focus.key) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    const fam = KMAP[focus.key]?.fam;
+    legFams.forEach(el=>{
+      if(el.dataset.fam === fam) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+  }
+
+  if(focus.kind === "fam"){
+    blocks.forEach(el=>{
+      if(el.dataset.fam === focus.fam) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    chips.forEach(el=>{
+      if(el.dataset.fam === focus.fam) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    legFams.forEach(el=>{
+      if(el.dataset.fam === focus.fam) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+    legKeys.forEach(el=>{
+      const kf = KMAP[el.dataset.key]?.fam;
+      if(kf === focus.fam) el.classList.add("highlighted");
+      else el.classList.add("dimmed");
+    });
+  }
+}
+
+function focusFromSegmentEl(el){
+  const id = el.dataset.id;
+  const key = el.dataset.key;
+  const fam = el.dataset.fam;
+
+  if(hl.group){
+    if(hl.groupMode === "key") return {kind:"key", id:null, key, fam};
+    return {kind:"fam", id:null, key:null, fam};
+  }
+  return {kind:"seg", id, key, fam};
+}
+
+function toggleSelect(focus){
+  if(hl.selected && sameFocus(hl.selected, focus)){
+    hl.selected = null;
+  } else {
+    hl.selected = focus;
+  }
+  applyHighlight();
+}
+
+const mapBar = $("#mapBar");
+const mapChips = $("#mapChips");
+
+mapBar.addEventListener("mouseover", e=>{
+  const el = e.target.closest(".segblock");
+  if(!el) return;
+  hl.hover = focusFromSegmentEl(el);
+  applyHighlight();
+});
+mapBar.addEventListener("mouseleave", ()=>{
+  hl.hover = null;
+  applyHighlight();
+});
+mapBar.addEventListener("click", e=>{
+  const el = e.target.closest(".segblock");
+  if(!el) return;
+  toggleSelect(focusFromSegmentEl(el));
+});
+
+mapChips.addEventListener("mouseover", e=>{
+  const el = e.target.closest(".chip");
+  if(!el) return;
+  hl.hover = focusFromSegmentEl(el);
+  applyHighlight();
+});
+mapChips.addEventListener("mouseleave", ()=>{
+  hl.hover = null;
+  applyHighlight();
+});
+mapChips.addEventListener("click", e=>{
+  const el = e.target.closest(".chip");
+  if(!el) return;
+  toggleSelect(focusFromSegmentEl(el));
+});
+
+$("#legKey").addEventListener("mouseover", e=>{
+  const li = e.target.closest("li[data-key]");
+  if(!li) return;
+  hl.hover = {kind:"key", id:null, key:li.dataset.key, fam:KMAP[li.dataset.key]?.fam || null};
+  applyHighlight();
+});
+$("#legKey").addEventListener("mouseleave", ()=>{
+  hl.hover = null;
+  applyHighlight();
+});
+$("#legKey").addEventListener("click", e=>{
+  const li = e.target.closest("li[data-key]");
+  if(!li) return;
+  toggleSelect({kind:"key", id:null, key:li.dataset.key, fam:KMAP[li.dataset.key]?.fam || null});
+});
+
+$("#legFam").addEventListener("mouseover", e=>{
+  const li = e.target.closest("li[data-fam]");
+  if(!li) return;
+  hl.hover = {kind:"fam", id:null, key:null, fam:li.dataset.fam};
+  applyHighlight();
+});
+$("#legFam").addEventListener("mouseleave", ()=>{
+  hl.hover = null;
+  applyHighlight();
+});
+$("#legFam").addEventListener("click", e=>{
+  const li = e.target.closest("li[data-fam]");
+  if(!li) return;
+  toggleSelect({kind:"fam", id:null, key:null, fam:li.dataset.fam});
+});
+
+$("#groupBtn").onclick = ()=>{
+  hl.group = !hl.group;
+  $("#groupBtn").textContent = `Agrupar: ${hl.group ? "ON" : "OFF"}`;
+  $("#groupBtn").classList.toggle("on", hl.group);
+  clearHighlightState();
+};
+
+$("#groupModeBtn").onclick = ()=>{
+  hl.groupMode = hl.groupMode === "key" ? "fam" : "key";
+  $("#groupModeBtn").textContent = hl.groupMode === "key" ? "Tonalidad" : "Familia";
+  clearHighlightState();
+};
+
+$("#clearHighlight").onclick = ()=> clearHighlightState();
+
+document.addEventListener("keydown", e=>{
+  if(e.key === "Escape"){
+    if(!$("#durOverlay").classList.contains("hidden")){
+      closeDurModal();
+    } else {
+      clearHighlightState();
+    }
+  }
+});
+
+/* ================= EVENTOS GENERALES ================= */
+document.addEventListener("input", e=>{
+  const id = e.target.id;
+  if(e.target.closest("#segRows") || ["name","unit","bpm","tsig","notes","expMode","expWin","expWi","expWf"].includes(id)){
+    if(id === "unit"){
+      state.unit = e.target.value;
+      unitLabels();
+    }
+    refresh();
+  }
+});
+
+document.addEventListener("change", e=>{
+  if(e.target.closest("#segRows")) refresh();
+});
+
+$("#segRows").addEventListener("click", e=>{
+  if(e.target.classList.contains("danger")){
+    e.target.closest(".segrow").remove();
+    refresh();
+  }
+});
+
+$("#addSeg").onclick = ()=>{
+  const last = state.segs[state.segs.length - 1];
+  const ini = last ? (last.fin || 0) : 0;
+  state.segs.push({id: uid(), key:"C major", ini, fin: ini + 8, tag:""});
+  renderRows();
+  refresh();
+};
+
+$("#clearSess").onclick = ()=>{
+  if(!confirm("🧹 ¿Limpiar la sesión actual?\nLas sesiones guardadas en el historial NO se borran.")) return;
+  writeState(blankState());
+  clearHighlightState();
+  toast("Sesión limpiada");
+};
+
+$("#chOsc").onclick = ()=>{ setChar("oscuro"); refresh(); };
+$("#chBri").onclick = ()=>{ setChar("brillante"); refresh(); };
+$("#expBtn").onclick = ()=>{ setExp(!state.exp); refresh(); };
+
+$("#copyLegend").onclick = ()=>{
+  const res = compute(readState());
+  if(!res.secsAvail){
+    toast("Agrega BPM para generar mm:ss");
+    return;
+  }
+  copyText(legendLines(res).join("\n"));
+};
+
+$("#copyReport").onclick = ()=>{
+  copyText(report(compute(readState())));
+};
+
+function getExportBaseName(){
+  readState();
+  if(state.name && state.name.trim()){
+    return sanitizeFilename(state.name);
+  }
+  const ask = prompt("Nombre del archivo a exportar:", "sesion_sin_nombre");
+  if(ask === null) return null;
+  return sanitizeFilename(ask || "sesion_sin_nombre");
+}
+
+$("#dlReport").onclick = ()=>{
+  const base = getExportBaseName();
+  if(!base) return;
+  download(base + "_informe.txt", report(compute(readState())));
+};
+
+$("#dlGuide").onclick = ()=>{
+  download("Guia_Calculadora_de_Tonalidad_Global_v1.txt", GUIDE);
+};
+
+$("#saveSess").onclick = ()=>{
+  const h = getHist();
+  h.unshift({id: Date.now(), savedAt: Date.now(), s: readState()});
+  setHist(h.slice(0, 50));
+  toast("Sesión guardada");
+};
+
+$("#histList").addEventListener("click", e=>{
+  const ld = e.target.dataset.load;
+  const dl = e.target.dataset.del;
+  const h = getHist();
+
+  if(ld){
+    const x = h.find(y => String(y.id) === String(ld));
+    if(x){
+      writeState(x.s);
+      clearHighlightState();
+      toast("Sesión cargada");
+    }
+  }
+
+  if(dl){
+    setHist(h.filter(y => String(y.id) !== String(dl)));
+    toast("Sesión eliminada");
+  }
+});
+
+$("#expJson").onclick = ()=>{
+  let h = getHist();
+  let note = "";
+
+  if(!h.length){
+    const cur = readState();
+    if(!cur.segs.length){
+      toast("Nada que exportar todavía");
+      return;
+    }
+    h = [{id: Date.now(), savedAt: Date.now(), s: cur}];
+    note = "Historial vacío: se exportó la sesión actual";
+  }
+
+  const base = getExportBaseName();
+  if(!base) return;
+
+  const payload = {
+    app: "calculadora-tonal-global",
+    version: 4,
+    exportedAt: new Date().toISOString(),
+    sessions: h
+  };
+
+  download(base + ".json", JSON.stringify(payload, null, 2), "application/json;charset=utf-8");
+  toast(note || `${h.length} sesión(es) exportadas`);
+};
+
+$("#impJson").onclick = ()=> $("#impFile").click();
+
+$("#impFile").onchange = e=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const parsed = JSON.parse(r.result);
+      const imp = sanitizeSessions(parsed);
+      if(!imp.length){
+        toast("JSON sin sesiones válidas");
+        return;
+      }
+      const h = getHist();
+      const ids = new Set(h.map(x => String(x.id)));
+      const add = imp.filter(x => !ids.has(String(x.id)));
+      if(!add.length){
+        toast("Esas sesiones ya existen");
+        return;
+      }
+      setHist(add.concat(h).sort((a,b)=> b.savedAt - a.savedAt).slice(0,50));
+      toast(`${add.length} sesión(es) importadas`);
+    }catch(err){
+      toast("JSON inválido");
+    }
+  };
+  r.readAsText(f);
+  e.target.value = "";
+};
+
+/* ================= ARRANQUE ================= */
+loadCur();
+writeState(state);
+renderHist();
+</script>
+</body>
+</html>
