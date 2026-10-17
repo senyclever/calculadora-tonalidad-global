@@ -327,3 +327,9 @@ Puedes usarlo directamente desde el navegador:
 
 ```text
 https://senyclever.github.io/calculadora-tonalidad-global/
+```
+El enlace se encuentra también al inicio de este README.
+
+---
+
+### By Seny Clever
