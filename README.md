@@ -68,7 +68,7 @@ Busca la opción: "Key Detector: Key...".
 
 ![Importar CSV](docs/screenshots/02.1-analisar-key.png)
 
-_Para una búsqueda mas exacta y universal: "Transform", "Analysis by Maker", "Queen Mary", "University of London" y "Key Detector: Key...". de Sonic Visualiser._
+_Para una búsqueda mas exacta y universal: "Transform", "Analysis by Maker", "Queen Mary", "University of London" y "Key Detector: Key...". en Sonic Visualiser._
 
 ## 📥 Ejemplo de CSV compatible
 
