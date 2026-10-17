@@ -5,7 +5,7 @@
 
 ![Portada](docs/screenshots/01-portada.png)
 
-[Aquí agrego una imagen de portada: la calculadora completa con una sesión ya cargada, mostrando mapa de modulaciones y resultado global.]
+[Aquí agrego una imagen de portada: parte de la calculadora, con una sesión ya cargada, mostrando mapa de modulaciones y resultado global.]
 
 ---
 
