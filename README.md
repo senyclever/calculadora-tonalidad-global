@@ -6,7 +6,7 @@ https://senyclever.github.io/calculadora-tonalidad-global/
 
 ![Portada](docs/screenshots/01-portada.png)
 
-[Aquí agrego una imagen de portada: parte de la calculadora, con una sesión ya cargada, mostrando familias armónicas, mapa de modulaciones y resultado global.]
+_Parte de la calculadora, con una sesión ya cargada, mostrando familias armónicas, mapa de modulaciones y resultado global de tonalidad._
 
 ---
 
@@ -60,7 +60,15 @@ Puedes pegar el contenido del CSV, importar el archivo o arrastrarlo directament
 
 ![Importar CSV](docs/screenshots/02-importar-csv.png)
 
-[Aquí agrego una imagen de la tarjeta “Importar CSV de Sonic Visualiser”.]
+_Tarjeta “Importar CSV de Sonic Visualiser”._
+
+### 📥 Análisis de tonalidad del Audio en Sonic Visualiser
+
+Busca la opción: "Key Detector: Key...".
+
+![Importar CSV](docs/screenshots/02.1-analisar-key.png)
+
+_Para una búsqueda mas exacta y universal: "Transform", "Analysis by Maker", "Queen Mary", "University of London" y "Key Detector: Key...". de Sonic Visualiser._
 
 ## 📥 Ejemplo de CSV compatible
 
@@ -98,7 +106,7 @@ Al importar un CSV, la calculadora solicita la duración exacta del audio para c
 
 ![Duración total](docs/screenshots/03-modal-duracion.png)
 
-[Aquí agrego una imagen del modal de duración total con horas, minutos y segundos. (Utiliza Sonic Visualiser arrastrando la linea vertical (Playhead) al final del audio)]
+_Modal de duración total con horas, minutos y segundos. (Utiliza Sonic Visualiser arrastrando la linea vertical (Playhead) al final del audio)._
 
 ---
 
@@ -108,7 +116,7 @@ Nombre de sesión, unidad, BPM, compás, carácter y refuerzo.
 
 ![Entrada de datos](docs/screenshots/04-entrada-datos.png)
 
-[Aquí agrego una imagen de la tarjeta “Entrada de datos” con una sesión cargada.]
+_Tarjeta “Entrada de datos” con una sesión cargada._
 
 ---
 
@@ -118,7 +126,7 @@ Cada tonalidad aparece representada según su presencia temporal.
 
 ![Distribución de escalas](docs/screenshots/05-distribucion-escalas.png)
 
-[Aquí agrego una imagen del gráfico de dona y la leyenda de distribución de escalas.]
+_Gráfico de dona y la leyenda de distribución de escalas._
 
 ---
 
@@ -128,7 +136,7 @@ Las familias agrupan tonalidades relativas que comparten las mismas notas.
 
 ![Familias armónicas](docs/screenshots/06-familias.png)
 
-[Aquí agrego una imagen de la sección “Familias armónicas”.]
+_Sección “Familias armónicas”._
 
 ---
 
@@ -138,7 +146,7 @@ Una barra temporal muestra los cambios de tonalidad a lo largo del tema.
 
 ![Mapa de modulaciones](docs/screenshots/07-mapa-modulaciones.png)
 
-[Aquí agrego una imagen del mapa de modulaciones con varios colores, agrupando las familias armónicas.]
+_Mapa de modulaciones con varios colores, agrupando las familias armónicas._
 
 ---
 
@@ -148,7 +156,7 @@ La calculadora entrega la tonalidad principal, su familia, compatibilidad Camelo
 
 ![Resultado global](docs/screenshots/08-resultado-global.png)
 
-[Aquí agrego una imagen del resultado global con una tonalidad ganadora.]
+_Resultado global con una tonalidad ganadora._
 
 ---
 
@@ -158,7 +166,7 @@ El refuerzo permite dar más peso a las secciones de apertura y cierre del tema.
 
 ![Refuerzo](docs/screenshots/09-refuerzo.png)
 
-[Aquí agrego una imagen como ejemplo del refuerzo activado, mostrando ventana y peso extra.]
+_Ejemplo del refuerzo activado, mostrando ventana y peso extra._
 
 ---
 
@@ -168,7 +176,7 @@ Puedes guardar sesiones, exportarlas e importarlas.
 
 ![Historial](docs/screenshots/10-historial.png)
 
-[Aquí agrego una imagen de la tarjeta “Historial” con sesiones guardadas.]
+_Tarjeta “Historial” con sesiones guardadas._
 
 ---
 
@@ -178,7 +186,7 @@ El informe incluye resultado global, distribución, segmentos, notas y leyenda d
 
 ![Informe](docs/screenshots/11-informe.png)
 
-[Aquí agrego una imagen de un informe TXT abierto o copiado.]
+_Informe TXT abierto o copiado._
 
 ---
 
