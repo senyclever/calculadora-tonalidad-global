@@ -187,17 +187,19 @@ Puedes guardar sesiones, exportarlas e importarlas.
 
 ![Historial](docs/screenshots/10-historial.png)
 
-_Tarjeta “Historial” con sesiones guardadas._
+_Sección “Historial”, para gestionar el guardado de tus sesiones._
 
 ---
 
 ### 📄 Informe generado y Descargar ".txt" de la Guía de uso.
 
-El informe incluye resultado global, distribución, segmentos, notas y leyenda de tiempos. También puedes descargar una guía mas detallada sobre el uso completo de la calculadora de tonalidad global.
+El informe incluye resultado global, distribución, segmentos, notas y leyenda de tiempos. 
+
+También puedes descargar una guía mas detallada sobre el uso completo de la calculadora de tonalidad global.
 
 ![Informe](docs/screenshots/11-informe.png)
 
-_Informe TXT abierto o copiado._
+_Sección de "Notas e Informe", puedes anotar lo que quieras dejar plasmado en tu informe._
 
 ---
 
