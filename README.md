@@ -244,7 +244,7 @@ En un solo archivo recibe tonalidad global, notas de la escala, secciones con ti
 
 ### 🎬 Crea contenido con ella
 
-Analiza canciones famosas, samples icónicos o tus propios beats y publica el resultado.
+Analiza canciones famosas, samples icónicos o tus propios beats y publica el resultado de tus obras.
 
 El informe y el mapa de modulaciones son material visual perfecto para videos cortos, hilos o clases de teoría musical aplicada.
 
