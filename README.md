@@ -5,7 +5,7 @@
 
 ![Portada](docs/screenshots/01-portada.png)
 
-[Aquí agrego una imagen de portada: parte de la calculadora, con una sesión ya cargada, mostrando mapa de modulaciones y resultado global.]
+[Aquí agrego una imagen de portada: parte de la calculadora, con una sesión ya cargada, mostrando familias armónicas, mapa de modulaciones y resultado global.]
 
 ---
 
@@ -49,8 +49,6 @@ Pero no solo eso: también te muestra cómo esa tonalidad evoluciona en el tiemp
 - ✅ Exportación/importación de historial en JSON.
 - ✅ Interfaz oscura, clara y pensada para flujo de trabajo musical.
 
-[Aquí agrego una imagen general de la interfaz mostrando varias tarjetas visibles.]
-
 ---
 
 ## 🖥️ Capturas de pantalla
@@ -71,7 +69,7 @@ Al importar un CSV, la calculadora solicita la duración exacta del audio para c
 
 ![Duración total](docs/screenshots/03-modal-duracion.png)
 
-[Aquí agrego una imagen del modal de duración total con horas, minutos y segundos.]
+[Aquí agrego una imagen del modal de duración total con horas, minutos y segundos. (Utiliza Sonic Visualiser arrastrando la linea vertical (Playhead) al final del audio)]
 
 ---
 
@@ -101,7 +99,7 @@ Las familias agrupan tonalidades relativas que comparten las mismas notas.
 
 ![Familias armónicas](docs/screenshots/06-familias.png)
 
-[Aquí agrego una imagen de la tarjeta “Familias armónicas”.]
+[Aquí agrego una imagen de la sección “Familias armónicas”.]
 
 ---
 
@@ -111,7 +109,7 @@ Una barra temporal muestra los cambios de tonalidad a lo largo del tema.
 
 ![Mapa de modulaciones](docs/screenshots/07-mapa-modulaciones.png)
 
-[Aquí agrego una imagen del mapa de modulaciones con varios colores.]
+[Aquí agrego una imagen del mapa de modulaciones con varios colores, agrupando las familias armónicas.]
 
 ---
 
@@ -131,7 +129,7 @@ El refuerzo permite dar más peso a las secciones de apertura y cierre del tema.
 
 ![Refuerzo](docs/screenshots/09-refuerzo.png)
 
-[Aquí agrego una imagen del refuerzo activado mostrando ventana y peso extra.]
+[Aquí agrego una imagen como ejemplo del refuerzo activado, mostrando ventana y peso extra.]
 
 ---
 
@@ -145,9 +143,9 @@ Puedes guardar sesiones, exportarlas e importarlas.
 
 ---
 
-### 📄 Informe generado
+### 📄 Informe generado y Descargar ".txt" de la Guía de uso.
 
-El informe incluye resultado global, distribución, segmentos, notas y leyenda de tiempos.
+El informe incluye resultado global, distribución, segmentos, notas y leyenda de tiempos. También puedes descargar una guía mas detallada sobre el uso completo de la calculadora de tonalidad global.
 
 ![Informe](docs/screenshots/11-informe.png)
 
