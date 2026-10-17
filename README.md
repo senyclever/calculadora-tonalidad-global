@@ -173,6 +173,85 @@ Te permite trabajar con segmentos temporales y entender el comportamiento armón
 
 ---
 
+## 🎨 Usos Creativos
+
+La calculadora no es solo una herramienta de análisis: también es un instrumento de composición. Estas son algunas formas de exprimirla dentro de tu flujo creativo.
+
+### 🎧 Detecta la tonalidad REAL de tus samples
+
+Muchos samples, loops y acapellas circulan transpuestos: el archivo que descargaste puede no estar en la tonalidad del original.
+
+Analiza el sample con Sonic Visualiser, importa el CSV y obtén:
+
+- la tonalidad real que SUENA en tu archivo,
+- las notas exactas de esa escala,
+- su código Camelot.
+
+Así sabrás si debes transponerlo para que encaje con tu beat, o si está listo para soltarse directo en el arreglo.
+
+### 🔀 Mashups y acapellas sin chocar
+
+Con el código Camelot del resultado puedes combinar materiales de orígenes distintos:
+
+- mismo número, letra opuesta (ej.: 10A con 10B),
+- número vecino, misma letra (ej.: 10A con 9A u 11A).
+
+Si la acapella está en 8A y tu instrumental en 8B, la mezcla nace armónicamente limpia.
+
+### 🎹 Snap a escala en el DAW
+
+Copia las 7 notas de la escala ganadora y actívalas en el "scale snap" o "resaltar escala" de tu DAW.
+
+Resultado: cada melodía, lead o contramelodía que dibujes quedará dentro de la tonalidad del tema, sin notas fuera de lugar.
+
+### 🥁 Afina el 808 sección por sección
+
+Si tu beat modula, el mapa de modulaciones te dice exactamente en qué segundo cambia la tonalidad.
+
+Ajusta la raíz del bajo o del 808 en cada sección usando la leyenda de tiempos: el grave siempre estará cantando en la escala correcta.
+
+### 🌗 Contraste emocional con familias relativas
+
+Una familia armónica comparte las mismas notas entre su versión mayor y su menor.
+
+Eso te permite escribir un verso oscuro en la versión menor y abrir el coro en la relativa mayor (o al revés) sin cambiar una sola nota de tu paleta: solo cambia el centro emocional.
+
+### 🚀 Modulación como plano de arreglo
+
+El mapa de modulaciones también se usa al revés: como partitura de decisiones.
+
+Planifica de antemano dónde quieres que el tema despegue: un cambio a la relativa mayor en el último coro, o una subida de tonalidad para el cierre. La calculadora te deja ver y pesar ese plan antes de grabar nada.
+
+### 🗂️ Sample packs organizados por tonalidad
+
+Analiza cada loop de tu librería una sola vez y guarda su Camelot en el nombre del archivo:
+
+`Loop_F#m_11A_92bpm.wav`
+
+Cuando produzcas, no adivines: filtra por Camelot compatible y arma el beat en minutos.
+
+### 🎛️ Sets DJ y transiciones armónicas
+
+Exporta el informe de cada track de tu set y ordénalos por Camelot.
+
+Las transiciones entre bloques compatibles suenan naturales; los saltos de familia los reservas para el momento de ruptura que tú elijas.
+
+### 🤝 Colaboración sin fricción
+
+Envía el informe .txt a quien colabore contigo: intérprete, mezclador o productor adicional.
+
+En un solo archivo recibe tonalidad global, notas de la escala, secciones con tiempos y tus notas de sesión. Cero idas y vueltas de "¿en qué clave está esto?". Si quieres agregar el BPM, mídelo por separado y anotalo en la sección de notas e informe de la calculadora.
+
+### 🎬 Crea contenido con ella
+
+Analiza canciones famosas, samples icónicos o tus propios beats y publica el resultado.
+
+El informe y el mapa de modulaciones son material visual perfecto para videos cortos, hilos o clases de teoría musical aplicada.
+
+¿Se te ocurre otro uso creativo? Ábrelo como Issue o compártelo: esta sección crece con la comunidad.
+
+---
+
 ## 📦 Instalación
 
 No necesita instalación.
