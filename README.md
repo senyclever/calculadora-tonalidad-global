@@ -323,9 +323,7 @@ Mientras el navegador sea relativamente moderno, debería funcionar correctament
 
 ### Opción 2 — Usar online con GitHub Pages
 
-Si este repositorio está publicado con GitHub Pages, puedes usarlo directamente desde el navegador.
-
-Botón sugerido:
+Puedes usarlo directamente desde el navegador:
 
 ```text
-Usar online
+https://senyclever.github.io/calculadora-tonalidad-global/
