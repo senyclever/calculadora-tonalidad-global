@@ -61,6 +61,34 @@ Puedes pegar el contenido del CSV, importar el archivo o arrastrarlo directament
 
 [Aquí agrego una imagen de la tarjeta “Importar CSV de Sonic Visualiser”.]
 
+## 📥 Ejemplo de CSV compatible
+
+El repositorio incluye un archivo de ejemplo real exportado desde Sonic Visualiser:
+
+📄 [examples/ejemplo_sonic_visualiser.csv](examples/ejemplo_sonic_visualiser.csv)
+
+Su contenido es:
+
+```csv
+0.000000000,18,F minor
+14.860770975,23,Bb minor
+19.319002268,9,Ab major
+20.805079365,23,Bb minor
+23.034195011,9,Ab major
+26.749387755,23,Bb minor
+54.984852608,18,F minor
+66.130430839,23,Bb minor
+76.532970522,18,F minor
+87.678548753,23,Bb minor
+```
+
+La calculadora entiende tanto los códigos numéricos como las etiquetas de tonalidad:
+
+- `1–12` = tonalidades mayores
+- `13–24` = tonalidades menores
+
+Puedes descargarlo y arrastrarlo directamente a la calculadora para probarla sin necesidad de analizar tu propio audio.
+
 ---
 
 ### ⏱️ Ventana de duración total del audio
