@@ -77,7 +77,7 @@ _Para una búsqueda mas exacta y universal: "Transform", "Analysis by Maker", "Q
 
 Ve a "File", luego selecciona "Export Annotation Layer...".
 
-Este es el archivo que vas a importar en la calculadora, para realizar todo el análisis tonal.
+Este es el archivo que vas a importar en la calculadora, para realizar todo el análizis tonal.
 
 ![Importar CSV](docs/screenshots/02.2-exportar-csv.png)
 
