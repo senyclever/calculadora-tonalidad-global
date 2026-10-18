@@ -1,8 +1,10 @@
 # 🎼 Calculadora de Tonalidad Global
 https://senyclever.github.io/calculadora-tonalidad-global/
 
-> 🎼 Calculadora gratuita de tonalidad global para productores, DJs y beatmakers.  
+> 🎼 Calculadora gratuita de tonalidad global para productores, DJs y beatmakers.
+  
 > Analiza escalas, familias armónicas y modulaciones usando Sonic Visualiser (https://www.sonicvisualiser.org/).
+
 > Sin instalación · Offline · Un solo archivo HTML.
 
 ![Portada](docs/screenshots/01-portada.png)
