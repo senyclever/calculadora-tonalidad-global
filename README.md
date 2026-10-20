@@ -55,7 +55,7 @@ Pero no solo eso: también te muestra cómo esa tonalidad evoluciona en el tiemp
 
 ---
 
-## 🖥️ Capturas de pantalla
+## 🖥️ Tutorial Básico:
 
 ### 📥 Abre tu audio en Sonic Visualiser
 
@@ -129,13 +129,15 @@ _Modal de duración total con horas, minutos y segundos. Utiliza Sonic Visualise
 
 ### 🎛️ Entrada de datos
 
-Nombre de sesión, unidad, BPM, compás, carácter y refuerzo.
+Puedes agregar: Nombre de sesión, unidad, BPM, compás, carácter y refuerzo. (Esos dos últimos afectan el cálculo). Parte de esa información se va adicionando a tu informe final.
 
 ![Entrada de datos](docs/screenshots/04-entrada-datos.png)
 
 _Tarjeta “Entrada de datos” con una sesión cargada._
 
 ---
+
+## 🔍 Algunas Características
 
 ### 🍩 Distribución de escalas
 
