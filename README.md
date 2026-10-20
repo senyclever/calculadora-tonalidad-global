@@ -57,13 +57,9 @@ Pero no solo eso: también te muestra cómo esa tonalidad evoluciona en el tiemp
 
 ## 🖥️ Capturas de pantalla
 
-### 📥 Importación desde Sonic Visualiser
+### 📥 Abre tu audio en Sonic Visualiser
 
-Puedes pegar el contenido del CSV, importar el archivo o arrastrarlo directamente.
-
-![Importar CSV](docs/screenshots/02-importar-csv.png)
-
-_Tarjeta “Importar CSV de Sonic Visualiser”._
+![Importar CSV](docs/screenshots/02-abrir-audio-en-sonic-visualiser.png)
 
 ### 📥 Análisis de tonalidad del Audio en Sonic Visualiser
 
@@ -82,6 +78,14 @@ Este es el archivo que vas a importar en la calculadora, para realizar todo el a
 ![Importar CSV](docs/screenshots/02.2-exportar-csv.png)
 
 _Sección “Importar CSV en Sonic Visualiser”._
+
+### 📥 Importación del CSV a la calculadora
+
+Puedes pegar el contenido del CSV, importar el archivo o arrastrarlo directamente.
+
+![Importar CSV](docs/screenshots/02.3-calculadora-y-csv.png)
+
+_Tarjeta “Importar CSV de Sonic Visualiser”._
 
 ## 📥 Ejemplo de CSV compatible
 
